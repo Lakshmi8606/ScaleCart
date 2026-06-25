@@ -26,3 +26,11 @@ Content-Type: application/json
   "email": "not-an-email",
   "password": "123"
 }
+### Login and get JWT
+POST http://localhost:8081/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "laxdev@example.com",
+  "password": "SecurePass123"
+}

@@ -6,6 +6,9 @@ public class AuthResponse {
     private String username;
     private String email;
     private String message;
+    private String accessToken;
+    private String refreshToken;
+
 
     public AuthResponse() {
     }
@@ -47,5 +50,20 @@ public class AuthResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
