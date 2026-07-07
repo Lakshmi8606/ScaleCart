@@ -1,10 +1,14 @@
 package com.scalecart.order.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Entity
 @Table(name = "orders")
@@ -33,6 +37,7 @@ public class Order {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<OrderItem> items = new ArrayList<>();
 
     @Column(name = "created_at", updatable = false)

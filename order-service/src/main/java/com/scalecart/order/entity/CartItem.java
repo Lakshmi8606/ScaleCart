@@ -1,5 +1,7 @@
 package com.scalecart.order.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -15,6 +17,7 @@ public class CartItem {
     // FetchType.LAZY: don't load the Cart object unless explicitly needed
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonBackReference
     private Cart cart;
 
     @Column(name = "product_id", nullable = false)

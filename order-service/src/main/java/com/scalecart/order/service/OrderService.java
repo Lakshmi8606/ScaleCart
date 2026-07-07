@@ -1,6 +1,8 @@
 package com.scalecart.order.service;
 
 import com.scalecart.order.entity.*;
+import com.scalecart.order.event.OrderCreatedEvent;
+import com.scalecart.order.kafka.OrderEventProducer;
 import com.scalecart.order.repository.CartRepository;
 import com.scalecart.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,14 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
+    private final OrderEventProducer orderEventProducer;
 
     public OrderService(OrderRepository orderRepository,
-                        CartRepository cartRepository) {
+                        CartRepository cartRepository,
+                        OrderEventProducer orderEventProducer) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
+        this.orderEventProducer = orderEventProducer;
     }
 
     // THE CRITICAL METHOD - @Transactional makes all DB operations atomic
@@ -50,28 +55,46 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.PENDING);
 
-        // Step 5: Convert CartItems → OrderItems (permanent snapshot)
+        // Step 5: Convert CartItems → OrderItems
         List<OrderItem> orderItems = cart.getItems().stream()
                 .map(cartItem -> new OrderItem(
                         order,
                         cartItem.getProductId(),
-                        cartItem.getProductName(),  // snapshot
-                        cartItem.getPrice(),         // snapshot
+                        cartItem.getProductName(),
+                        cartItem.getPrice(),
                         cartItem.getQuantity()
                 ))
                 .toList();
 
         order.setItems(orderItems);
 
-        // Step 6: Save the order (CascadeType.ALL saves order items too)
+        // Step 6: Save the order
         Order savedOrder = orderRepository.save(order);
 
-        // Step 7: Clear the cart after successful checkout
-        cart.getItems().clear();   // orphanRemoval deletes the items from DB
+        // Step 7: Clear the cart
+        cart.getItems().clear();
         cartRepository.save(cart);
 
-        // If anything above threw an exception, @Transactional
-        // ensures NONE of these DB changes persist - full rollback
+        // Step 8: Publish Kafka event AFTER successful DB save
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                savedOrder.getId(),
+                savedOrder.getUserId(),
+                savedOrder.getTotalAmount(),
+                savedOrder.getShippingAddress(),
+                savedOrder.getItems().stream()
+                        .map(item -> new OrderCreatedEvent.OrderItemDetail(
+                                item.getProductId(),
+                                item.getProductName(),
+                                item.getPrice(),
+                                item.getQuantity()
+                        ))
+                        .toList(),
+                savedOrder.getCreatedAt()
+        );
+
+        orderEventProducer.publishOrderCreated(event);
+
+        // Return the saved order
         return savedOrder;
     }
 

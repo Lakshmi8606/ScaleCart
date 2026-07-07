@@ -1,0 +1,42 @@
+### Step 1
+POST http://localhost:8083/api/cart/add
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "productId": 1,
+  "productName": "iPhone 15",
+  "price": 79999.00,
+  "quantity": 1
+}
+
+###
+
+POST http://localhost:8083/api/cart/add
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "productId": 3,
+  "productName": "Java Book",
+  "price": 499.00,
+  "quantity": 2
+}
+
+###
+
+GET http://localhost:8083/api/cart/1
+
+###
+
+POST http://localhost:8083/api/orders/checkout
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "shippingAddress": "123 MG Road, Bangalore, Karnataka 560001"
+}
+
+###
+
+GET http://localhost:8083/api/orders/user/1
