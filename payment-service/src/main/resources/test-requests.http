@@ -1,0 +1,25 @@
+### Initiate payment (first time)
+POST http://localhost:8084/api/payments/initiate
+Content-Type: application/json
+
+{
+  "orderId": 1,
+  "userId": 1,
+  "amount": 80498.00,
+  "idempotencyKey": "test-key-abc-123",
+  "gateway": "razorpay"
+}
+
+###
+
+### Simulate duplicate request with SAME idempotency key
+POST http://localhost:8084/api/payments/initiate
+Content-Type: application/json
+
+{
+  "orderId": 1,
+  "userId": 1,
+  "amount": 80498.00,
+  "idempotencyKey": "test-key-abc-123",
+  "gateway": "razorpay"
+}
