@@ -1,25 +1,10 @@
-### Initiate payment (first time)
-POST http://localhost:8084/api/payments/initiate
+# Run HmacTestUtil.main() to regenerate X-Razorpay-Signature if body changes
+POST http://localhost:8084/api/payments/webhook
 Content-Type: application/json
+X-Razorpay-Signature: 31dc4a99022b1e5073a21c8302c200aeaaab324ff6c7f1aaaf69f165277d964d
 
 {
-  "orderId": 1,
-  "userId": 1,
-  "amount": 80498.00,
-  "idempotencyKey": "test-key-abc-123",
-  "gateway": "razorpay"
-}
-
-###
-
-### Simulate duplicate request with SAME idempotency key
-POST http://localhost:8084/api/payments/initiate
-Content-Type: application/json
-
-{
-  "orderId": 1,
-  "userId": 1,
-  "amount": 80498.00,
-  "idempotencyKey": "test-key-abc-123",
-  "gateway": "razorpay"
+  "event": "payment.success",
+  "paymentId": 1,
+  "gatewayTransactionId": "rzp_txn_abc123"
 }
