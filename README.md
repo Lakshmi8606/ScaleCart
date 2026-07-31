@@ -12,7 +12,7 @@ Spring Boot 3.x, PostgreSQL, Redis, Kafka, and Docker.
 
 \- \*\*auth-service\*\* — JWT + RSA authentication
 
-\- \*\*product-service\*\* — Product catalog with Redis caching
+\- \*\*com-service\*\* — Product catalog with Redis caching
 
 \- \*\*order-service\*\* — Order management with Kafka events
 
