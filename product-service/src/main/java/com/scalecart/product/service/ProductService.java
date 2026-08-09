@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.scalecart.product.annotation.TrackExecutionTime;
 
 @Service
 public class ProductService {
@@ -26,6 +27,7 @@ public class ProductService {
     }
 
     // Cache individual product by ID
+    @TrackExecutionTime
     @Cacheable(value = "product", key = "#id")
     public Product getProductById(Long id) {
         return productRepository.findByIdAndActiveTrue(id)
