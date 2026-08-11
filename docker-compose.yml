@@ -40,5 +40,15 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
 
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: scalecart-rabbitmq
+    ports:
+      - "5672:5672"    # AMQP protocol port (app connections)
+      - "15672:15672"  # Management UI port (browser dashboard)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
 volumes:
   postgres_data:

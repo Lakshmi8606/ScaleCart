@@ -125,24 +125,4 @@ public class LoggingAspect {
                 joinPoint.getSignature().getName(),
                 returnValue != null ? returnValue.getClass().getSimpleName() : "null");
     }
-
-    // Pointcut that matches any method annotated with @TrackExecutionTime
-    @Pointcut("@annotation(com.scalecart.product.annotation.TrackExecutionTime)")
-    public void trackExecutionTimePointcut() {}
-
-    // Advice that fires for @TrackExecutionTime annotated methods
-    @Around("trackExecutionTimePointcut()")
-    public Object trackAnnotatedMethod(ProceedingJoinPoint joinPoint)
-            throws Throwable {
-
-        String methodName = joinPoint.getSignature().toShortString();
-        long start = System.currentTimeMillis();
-
-        Object result = joinPoint.proceed();
-
-        long duration = System.currentTimeMillis() - start;
-        log.info("@TrackExecutionTime — {} executed in {}ms", methodName, duration);
-
-        return result;
-    }
 }

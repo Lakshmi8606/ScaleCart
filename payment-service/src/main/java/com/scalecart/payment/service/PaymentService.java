@@ -5,16 +5,17 @@ import com.scalecart.payment.dto.PaymentResponse;
 import com.scalecart.payment.entity.Payment;
 import com.scalecart.payment.entity.PaymentStatus;
 import com.scalecart.payment.event.OrderPaidEvent;
+import com.scalecart.payment.rabbitmq.PaymentConfirmedEvent;
 import com.scalecart.payment.repository.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class PaymentService {
@@ -24,14 +25,23 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final KafkaTemplate<String, OrderPaidEvent> kafkaTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Value("${kafka.topic.order-paid}")
     private String orderPaidTopic;
 
+    @Value("${rabbitmq.exchange.payment}")
+    private String paymentExchange;
+
+    @Value("${rabbitmq.routing-key.order-paid}")
+    private String orderPaidRoutingKey;
+
     public PaymentService(PaymentRepository paymentRepository,
-                          KafkaTemplate<String, OrderPaidEvent> kafkaTemplate) {
+                          KafkaTemplate<String, OrderPaidEvent> kafkaTemplate,
+                          RabbitTemplate rabbitTemplate) {
         this.paymentRepository = paymentRepository;
         this.kafkaTemplate = kafkaTemplate;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Transactional
@@ -50,7 +60,7 @@ public class PaymentService {
             // Return EXACT same response as the original request
             // Client gets correct response regardless of how many times they retry
             PaymentResponse response = toResponse(existing.get());
-            response.setDuplicate(true);  // flag it transparently
+            response.setDuplicate(true);
             return response;
         }
         // ── END IDEMPOTENCY CHECK ──────────────────────────────────
@@ -93,12 +103,15 @@ public class PaymentService {
 
         payment.setStatus(PaymentStatus.COMPLETED);
         payment.setGatewayTransactionId(gatewayTransactionId);
-        payment.setGatewayResponse(gatewayResponse);  // raw JSON for audit
+        payment.setGatewayResponse(gatewayResponse);
 
         Payment completed = paymentRepository.save(payment);
 
-        // Publish order.paid event so Order Service can update order status
+        // Publish order.paid event to Kafka
         publishOrderPaidEvent(completed);
+
+        // Also publish to RabbitMQ for Order Service status update
+        publishToRabbitMQ(completed);
 
         return completed;
     }
@@ -140,17 +153,44 @@ public class PaymentService {
                 LocalDateTime.now()
         );
 
-        kafkaTemplate.send(orderPaidTopic,
-                        payment.getOrderId().toString(), event)
-                .whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        log.error("Failed to publish order.paid event " +
-                                "for orderId={}", payment.getOrderId());
-                    } else {
-                        log.info("Published order.paid event for orderId={}",
-                                payment.getOrderId());
-                    }
-                });
+        kafkaTemplate.send(
+                orderPaidTopic,
+                payment.getOrderId().toString(),
+                event
+        ).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("Failed to publish order.paid event " +
+                        "for orderId={}", payment.getOrderId());
+            } else {
+                log.info("Published order.paid event for orderId={}",
+                        payment.getOrderId());
+            }
+        });
+    }
+
+    // Publish payment confirmation to RabbitMQ
+    private void publishToRabbitMQ(Payment payment) {
+
+        PaymentConfirmedEvent event = new PaymentConfirmedEvent(
+                payment.getId(),
+                payment.getOrderId(),
+                payment.getUserId(),
+                payment.getAmount(),
+                payment.getGatewayTransactionId(),
+                LocalDateTime.now()
+        );
+
+        // Converts event to JSON and sends it to the exchange
+        // with the payment.paid routing key.
+        // The exchange then routes it to the order-status-update queue.
+        rabbitTemplate.convertAndSend(
+                paymentExchange,
+                orderPaidRoutingKey,
+                event
+        );
+
+        log.info("Published PaymentConfirmedEvent to RabbitMQ " +
+                "for orderId={}", payment.getOrderId());
     }
 
     // Entity → DTO mapper
@@ -170,3 +210,4 @@ public class PaymentService {
         return response;
     }
 }
+
