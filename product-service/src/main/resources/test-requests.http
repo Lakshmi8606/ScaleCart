@@ -1,0 +1,28 @@
+### 1) Login as admin (auth-service :8081)
+POST http://localhost:8081/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@scalecart.com",
+  "password": "Admin@123"
+}
+
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+%}
+
+### 2) Create product (product-service :8082) — needs ADMIN role
+POST http://localhost:8082/api/products
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse",
+  "description": "Ergonomic wireless mouse",
+  "price": 1299.99,
+  "stockQuantity": 75,
+  "categoryId": 1
+}
+
+### 3) Public — list products (no token needed)
+GET http://localhost:8082/api/products?page=0&size=10

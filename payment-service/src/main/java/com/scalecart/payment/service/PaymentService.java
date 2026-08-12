@@ -12,10 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PaymentService {
@@ -141,6 +143,11 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Payment not found for order: " + orderId));
         return toResponse(payment);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
     }
 
     private void publishOrderPaidEvent(Payment payment) {

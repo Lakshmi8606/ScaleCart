@@ -5,6 +5,7 @@ import com.scalecart.order.event.OrderCreatedEvent;
 import com.scalecart.order.kafka.OrderEventProducer;
 import com.scalecart.order.repository.CartRepository;
 import com.scalecart.order.repository.OrderRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,6 +109,11 @@ public class OrderService {
             Long userId,
             org.springframework.data.domain.Pageable pageable) {
         return orderRepository.findByUserId(userId, pageable);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 
     @Transactional

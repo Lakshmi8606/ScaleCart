@@ -2,11 +2,14 @@ package com.scalecart.payment.controller;
 
 import com.scalecart.payment.dto.PaymentInitiateRequest;
 import com.scalecart.payment.dto.PaymentResponse;
+import com.scalecart.payment.entity.Payment;
 import com.scalecart.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -38,5 +41,10 @@ public class PaymentController {
             @PathVariable Long orderId) {
         return ResponseEntity.ok(
                 paymentService.getPaymentByOrderId(orderId));
+    }
+
+    @GetMapping("/admin/all")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        return ResponseEntity.ok(paymentService.getAllPayments());
     }
 }

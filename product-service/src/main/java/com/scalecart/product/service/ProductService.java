@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.scalecart.product.annotation.TrackExecutionTime;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Service
 public class ProductService {
@@ -61,6 +62,7 @@ public class ProductService {
     }
 
     // Create Product
+    @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = {
             "product",
             "products",
@@ -88,6 +90,7 @@ public class ProductService {
     }
 
     // Update Product
+    @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = {
             "product",
             "products",
@@ -145,6 +148,7 @@ public class ProductService {
     }
 
     // Soft Delete Product
+    @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = {
             "product",
             "products",

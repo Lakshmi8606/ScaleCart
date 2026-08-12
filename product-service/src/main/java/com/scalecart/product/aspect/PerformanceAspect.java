@@ -18,8 +18,10 @@ public class PerformanceAspect {
     // Threshold above which we consider a method "slow"
     private static final long SLOW_METHOD_THRESHOLD_MS = 500;
 
-    // Matches ALL layers — controller, service, repository
-    @Pointcut("within(com.scalecart.product..*)")
+    // Controller, service, repository only — exclude security filters/config
+    @Pointcut("within(com.scalecart.product.controller..*) || " +
+            "within(com.scalecart.product.service..*) || " +
+            "within(com.scalecart.product.repository..*)")
     public void applicationLayerPointcut() {}
 
     @Around("applicationLayerPointcut()")

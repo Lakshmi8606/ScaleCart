@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -63,5 +65,10 @@ public class OrderController {
 
         return ResponseEntity.ok(
                 orderService.cancelOrder(orderId, userId));
+    }
+
+    @GetMapping("/admin/all")
+    public ResponseEntity<List<Order>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 }
