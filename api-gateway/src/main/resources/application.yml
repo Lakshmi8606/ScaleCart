@@ -1,0 +1,91 @@
+spring:
+  application:
+    name: api-gateway
+
+  # Redis for rate limiting
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # Cloud Gateway routes configuration
+  cloud:
+    gateway:
+      routes:
+
+        # ── Auth Service ───────────────────────────────────────────
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            # Auth endpoints are public - no JWT filter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@ipKeyResolver}"
+
+        # ── Product Service ────────────────────────────────────────
+        - id: product-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 20
+                redis-rate-limiter.burstCapacity: 50
+                key-resolver: "#{@ipKeyResolver}"
+            # JWT validation for non-GET requests handled by product-service itself
+
+        # ── Order Service ──────────────────────────────────────────
+        - id: order-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/orders/**,/api/cart/**
+          filters:
+            - JwtAuthFilter   # custom filter — validates JWT at gateway level
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@ipKeyResolver}"
+
+        # ── Payment Service ────────────────────────────────────────
+        - id: payment-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - JwtAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                key-resolver: "#{@ipKeyResolver}"
+
+        # ── Report Service ─────────────────────────────────────────
+        - id: report-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/reports/**
+          filters:
+            - JwtAuthFilter
+
+server:
+  port: 8080
+
+# JWT public key
+jwt:
+  public-key-path: classpath:keys/public_key.pem
+
+logging:
+  level:
+    com.scalecart.gateway.security: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
