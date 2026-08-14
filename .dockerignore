@@ -1,0 +1,25 @@
+# IDE files
+.idea/
+*.iml
+*.iws
+
+# Git
+.git/
+.gitignore
+
+# Compiled output — Docker builds fresh
+**/target/
+
+# Local environment files — never in Docker
+**/*.env
+**/application-local.properties
+
+# Test output
+**/surefire-reports/
+
+# Logs
+**/*.log
+
+# README and docs — not needed in image
+*.md
+docs/
