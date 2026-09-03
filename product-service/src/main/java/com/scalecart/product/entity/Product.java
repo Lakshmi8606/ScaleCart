@@ -21,14 +21,12 @@ public class Product implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // BigDecimal for money - NEVER use double or float for prices
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity = 0;
 
-    // Many products belong to one category
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;

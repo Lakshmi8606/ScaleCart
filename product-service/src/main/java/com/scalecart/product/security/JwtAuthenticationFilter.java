@@ -45,7 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (jwtService.isTokenValid(token)) {
             String email = jwtService.extractEmail(token);
 
-            // Extract roles from JWT claims and convert to GrantedAuthority
             List<String> roles = jwtService.extractRoles(token);
             List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(SimpleGrantedAuthority::new)
@@ -55,7 +54,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(
                             email, null, authorities);
 
-            // Set authentication — @PreAuthorize reads roles from here
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 

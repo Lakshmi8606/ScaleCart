@@ -13,16 +13,12 @@ public class AsyncConfig {
     public Executor webhookTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        // Minimum threads always kept alive
         executor.setCorePoolSize(5);
 
-        // Maximum threads allowed under spike load
         executor.setMaxPoolSize(20);
 
-        // Queue size - requests wait here if all 20 threads are busy
         executor.setQueueCapacity(100);
 
-        // Thread name prefix - visible in logs, helps debugging
         executor.setThreadNamePrefix("webhook-async-");
 
         executor.initialize();

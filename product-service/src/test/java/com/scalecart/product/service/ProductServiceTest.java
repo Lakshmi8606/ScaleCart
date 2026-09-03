@@ -56,19 +56,14 @@ class ProductServiceTest {
         testProduct.setActive(true);
     }
 
-    // ── getProductById tests ───────────────────────────────────────────
-
     @Test
     @DisplayName("Should return product when found by ID")
     void getProductById_Found() {
-        // Arrange
         when(productRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(testProduct));
 
-        // Act
         Product result = productService.getProductById(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("iPhone 15");
@@ -81,36 +76,29 @@ class ProductServiceTest {
     @Test
     @DisplayName("Should throw IllegalArgumentException when product not found")
     void getProductById_NotFound_ThrowsException() {
-        // Arrange
         when(productRepository.findByIdAndActiveTrue(999L))
                 .thenReturn(Optional.empty());
 
-        // Act + Assert
         assertThatThrownBy(() -> productService.getProductById(999L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Product not found with id: 999");
     }
 
-    // ── getAllProducts pagination tests ────────────────────────────────
-
     @Test
     @DisplayName("Should return paged products correctly")
     void getAllProducts_ReturnsPaginatedResults() {
-        // Arrange
         Pageable pageable = PageRequest.of(0, 10);
         Page<Product> mockPage = new PageImpl<>(
                 List.of(testProduct),
                 pageable,
-                1L   // total elements
+                1L
         );
 
         when(productRepository.findByActiveTrue(pageable))
                 .thenReturn(mockPage);
 
-        // Act
         Page<Product> result = productService.getAllProducts(pageable);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getTotalElements()).isEqualTo(1L);
@@ -121,7 +109,6 @@ class ProductServiceTest {
     @Test
     @DisplayName("Should return empty page when no products exist")
     void getAllProducts_EmptyPage() {
-        // Arrange
         Pageable pageable = PageRequest.of(0, 10);
         Page<Product> emptyPage = new PageImpl<>(
                 List.of(), pageable, 0L);
@@ -129,20 +116,15 @@ class ProductServiceTest {
         when(productRepository.findByActiveTrue(pageable))
                 .thenReturn(emptyPage);
 
-        // Act
         Page<Product> result = productService.getAllProducts(pageable);
 
-        // Assert
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
 
-    // ── createProduct tests ────────────────────────────────────────────
-
     @Test
     @DisplayName("Should create product successfully with valid request")
     void createProduct_Success() {
-        // Arrange
         ProductRequest request = new ProductRequest();
         request.setName("Samsung Galaxy S24");
         request.setPrice(new BigDecimal("74999.00"));
@@ -158,10 +140,8 @@ class ProductServiceTest {
                     return p;
                 });
 
-        // Act
         Product result = productService.createProduct(request);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(2L);
         assertThat(result.getName()).isEqualTo("Samsung Galaxy S24");
@@ -176,54 +156,43 @@ class ProductServiceTest {
     @Test
     @DisplayName("Should throw exception when category not found during product creation")
     void createProduct_CategoryNotFound_ThrowsException() {
-        // Arrange
         ProductRequest request = new ProductRequest();
         request.setName("Test Product");
         request.setPrice(new BigDecimal("999.00"));
         request.setStockQuantity(10);
-        request.setCategoryId(999L);   // non-existent category
+        request.setCategoryId(999L);
 
         when(categoryRepository.findById(999L))
                 .thenReturn(Optional.empty());
 
-        // Act + Assert
         assertThatThrownBy(() -> productService.createProduct(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Category not found with id: 999");
 
-        // Product should never be saved if category is invalid
         verify(productRepository, never()).save(any(Product.class));
     }
-
-    // ── deleteProduct (soft delete) tests ──────────────────────────────
 
     @Test
     @DisplayName("Should soft delete product by setting active=false")
     void deleteProduct_SetsActiveFalse() {
-        // Arrange
         when(productRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(testProduct));
         when(productRepository.save(any(Product.class)))
                 .thenReturn(testProduct);
 
-        // Act
         productService.deleteProduct(1L);
 
-        // Assert — product should now be inactive (soft deleted)
         assertThat(testProduct.isActive()).isFalse();
 
-        // Verify save was called (to persist the soft delete)
         verify(productRepository).save(testProduct);
     }
 
     @Test
     @DisplayName("Should throw exception when trying to delete non-existent product")
     void deleteProduct_NotFound_ThrowsException() {
-        // Arrange
         when(productRepository.findByIdAndActiveTrue(999L))
                 .thenReturn(Optional.empty());
 
-        // Act + Assert
         assertThatThrownBy(() -> productService.deleteProduct(999L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Product not found");

@@ -199,7 +199,6 @@ class OrderServiceTest {
     @DisplayName("Should calculate total correctly with multiple items")
     void checkout_TotalCalculation_IsCorrect() {
 
-        // 3 × ₹100 + 2 × ₹250 = ₹800
         Cart cart = new Cart(2L);
 
         cart.getItems().add(

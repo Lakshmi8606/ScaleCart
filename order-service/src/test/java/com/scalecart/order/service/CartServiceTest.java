@@ -33,7 +33,6 @@ class CartServiceTest {
     @BeforeEach
     void setUp() {
         existingCart = new Cart(1L);
-//        existingCart.setId(1L);
     }
 
     @Test
@@ -46,7 +45,6 @@ class CartServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getUserId()).isEqualTo(1L);
-        // Should NOT save a new cart
         verify(cartRepository, never()).save(any(Cart.class));
     }
 
@@ -58,7 +56,6 @@ class CartServiceTest {
         when(cartRepository.save(any(Cart.class)))
                 .thenAnswer(inv -> {
                     Cart c = inv.getArgument(0);
-//                    c.setId(2L);
                     return c;
                 });
 
@@ -89,7 +86,6 @@ class CartServiceTest {
     @Test
     @DisplayName("Should increment quantity when same product added again")
     void addItem_SameProduct_IncrementsQuantity() {
-        // Cart already has iPhone 15 with qty 1
         CartItem existing = new CartItem(
                 existingCart, 1L, "iPhone 15",
                 new BigDecimal("79999.00"), 1);
@@ -100,11 +96,9 @@ class CartServiceTest {
         when(cartRepository.save(any(Cart.class)))
                 .thenReturn(existingCart);
 
-        // Add same product again with qty 2
         cartService.addItem(1L, 1L, "iPhone 15",
                 new BigDecimal("79999.00"), 2);
 
-        // Should still be 1 item but quantity = 3 (1 + 2)
         assertThat(existingCart.getItems()).hasSize(1);
         assertThat(existingCart.getItems().get(0).getQuantity()).isEqualTo(3);
     }

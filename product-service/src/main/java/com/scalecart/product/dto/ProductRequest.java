@@ -25,7 +25,6 @@ public class ProductRequest {
 
     private String imageUrl;
 
-    // Getters and setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }

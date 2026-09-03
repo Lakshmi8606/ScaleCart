@@ -18,7 +18,6 @@ public class PaymentResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Was this a duplicate request that we handled idempotently?
     private boolean duplicate;
 
     public PaymentResponse() {}

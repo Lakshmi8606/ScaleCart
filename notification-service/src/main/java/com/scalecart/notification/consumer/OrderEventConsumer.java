@@ -36,12 +36,8 @@ public class OrderEventConsumer {
                 record.partition(),
                 record.offset());
 
-        // In a real system you'd fetch the user's email from Auth Service
-        // For now we construct a placeholder email from userId
-        // On Day 19 (API Gateway) we'll see how inter-service calls work
         String recipientEmail = "user" + event.getUserId() + "@example.com";
 
-        // If this throws, DefaultErrorHandler catches it → retries → DLQ
         emailNotificationService.sendOrderConfirmationEmail(event, recipientEmail);
 
         log.info("Successfully processed order.created event for orderId={}",

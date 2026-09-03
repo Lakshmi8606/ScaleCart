@@ -49,8 +49,6 @@ public class PaymentService {
     @Transactional
     public PaymentResponse initiatePayment(PaymentInitiateRequest request) {
 
-        // ── IDEMPOTENCY CHECK ──────────────────────────────────────
-        // Before doing ANYTHING, check if we've seen this key before
         var existing = paymentRepository
                 .findByIdempotencyKey(request.getIdempotencyKey());
 
@@ -59,15 +57,11 @@ public class PaymentService {
                             "idempotency_key={}, returning existing payment id={}",
                     request.getIdempotencyKey(), existing.get().getId());
 
-            // Return EXACT same response as the original request
-            // Client gets correct response regardless of how many times they retry
             PaymentResponse response = toResponse(existing.get());
             response.setDuplicate(true);
             return response;
         }
-        // ── END IDEMPOTENCY CHECK ──────────────────────────────────
 
-        // New payment - create and persist
         Payment payment = new Payment();
         payment.setOrderId(request.getOrderId());
         payment.setUserId(request.getUserId());
@@ -87,7 +81,6 @@ public class PaymentService {
         return response;
     }
 
-    // Called when webhook confirms payment success (Day 12)
     @Transactional
     public Payment completePayment(Long paymentId,
                                    String gatewayTransactionId,
@@ -97,7 +90,6 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Payment not found: " + paymentId));
 
-        // State machine validation - can only complete a PENDING payment
         if (payment.getStatus() != PaymentStatus.PENDING) {
             throw new IllegalStateException(
                     "Cannot complete payment in status: " + payment.getStatus());
@@ -109,10 +101,8 @@ public class PaymentService {
 
         Payment completed = paymentRepository.save(payment);
 
-        // Publish order.paid event to Kafka
         publishOrderPaidEvent(completed);
 
-        // Also publish to RabbitMQ for Order Service status update
         publishToRabbitMQ(completed);
 
         return completed;
@@ -175,7 +165,6 @@ public class PaymentService {
         });
     }
 
-    // Publish payment confirmation to RabbitMQ
     private void publishToRabbitMQ(Payment payment) {
 
         PaymentConfirmedEvent event = new PaymentConfirmedEvent(
@@ -187,9 +176,6 @@ public class PaymentService {
                 LocalDateTime.now()
         );
 
-        // Converts event to JSON and sends it to the exchange
-        // with the payment.paid routing key.
-        // The exchange then routes it to the order-status-update queue.
         rabbitTemplate.convertAndSend(
                 paymentExchange,
                 orderPaidRoutingKey,
@@ -200,7 +186,6 @@ public class PaymentService {
                 "for orderId={}", payment.getOrderId());
     }
 
-    // Entity → DTO mapper
     private PaymentResponse toResponse(Payment payment) {
         PaymentResponse response = new PaymentResponse();
         response.setId(payment.getId());
@@ -217,4 +202,3 @@ public class PaymentService {
         return response;
     }
 }
-

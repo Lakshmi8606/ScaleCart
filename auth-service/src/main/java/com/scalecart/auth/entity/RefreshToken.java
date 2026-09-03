@@ -14,7 +14,6 @@ public class RefreshToken {
     @Column(nullable = false, unique = true, length = 500)
     private String token;
 
-    // Many refresh tokens can belong to one user (one per device/session)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

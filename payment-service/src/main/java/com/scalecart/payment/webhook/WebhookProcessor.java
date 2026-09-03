@@ -20,8 +20,7 @@ public class WebhookProcessor {
         this.paymentService = paymentService;
     }
 
-    // Runs in "webhook-async-" thread pool, NOT in the HTTP request thread
-    // HTTP response (200 OK) has already been sent before this runs
+    // Runs after the HTTP 200 is already sent
     @Async("webhookTaskExecutor")
     public void processPaymentWebhook(WebhookPayload payload) {
         try {
@@ -55,9 +54,7 @@ public class WebhookProcessor {
             }
 
         } catch (Exception e) {
-            // CRITICAL: never let exceptions escape an @Async method silently
-            // They won't propagate to the caller (HTTP thread is gone)
-            // Always log them explicitly
+            // @Async exceptions do not propagate to the HTTP caller
             log.error("Error processing webhook for paymentId={}: {}",
                     payload.getPaymentId(), e.getMessage(), e);
         }

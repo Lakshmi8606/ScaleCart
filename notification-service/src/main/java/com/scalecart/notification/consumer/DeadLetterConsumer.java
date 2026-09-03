@@ -12,14 +12,13 @@ public class DeadLetterConsumer {
     private static final Logger log =
             LoggerFactory.getLogger(DeadLetterConsumer.class);
 
-    // Listens to the Dead Letter Topic - Spring appends .DLT automatically
+    // Spring names the DLT as <topic>.DLT
     @KafkaListener(
             topics = "order.created.DLT",
             groupId = "notification-service-dlq"
     )
     public void handleDeadLetter(ConsumerRecord<String, Object> record) {
 
-        // In production: alert PagerDuty/Slack, store in DB for manual review
         log.error("DEAD LETTER received: topic={}, partition={}, " +
                         "offset={}, key={}, value={}",
                 record.topic(),
@@ -28,6 +27,6 @@ public class DeadLetterConsumer {
                 record.key(),
                 record.value());
 
-        // TODO Day 27: store in DB + trigger Slack alert
+        // TODO: store in DB + trigger Slack alert
     }
 }

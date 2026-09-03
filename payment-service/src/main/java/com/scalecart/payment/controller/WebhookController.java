@@ -30,9 +30,6 @@ public class WebhookController {
         this.objectMapper = objectMapper;
     }
 
-    /**
-     * Webhook endpoint called by payment gateway (Razorpay/Stripe).
-     */
     @PostMapping("/webhook")
     public ResponseEntity<String> handleWebhook(
             @RequestBody String rawBody,
@@ -41,7 +38,6 @@ public class WebhookController {
 
         log.info("Webhook received, validating signature...");
 
-        // Step 1: Validate signature
         if (signature == null || signature.isBlank()) {
             log.warn("Webhook rejected: missing signature header");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -54,7 +50,6 @@ public class WebhookController {
                     .body("Invalid signature");
         }
 
-        // Step 2: Parse webhook body
         WebhookPayload payload;
         try {
             payload = parseWebhookBody(rawBody);
@@ -64,7 +59,6 @@ public class WebhookController {
                     .body("Invalid webhook payload");
         }
 
-        // Step 3: Process asynchronously
         webhookProcessor.processPaymentWebhook(payload);
 
         log.info("Webhook acknowledged for event={}, paymentId={}",

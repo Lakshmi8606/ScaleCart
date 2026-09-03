@@ -7,13 +7,6 @@ import net.sf.jasperreports.engine.JRField;
 
 import java.util.List;
 
-/**
- * Custom JRDataSource that iterates over InvoiceItem list.
- *
- * JasperReports calls next() to move to next row.
- * Then calls getFieldValue(field) to get each column value for that row.
- * This is the JasperReports equivalent of iterating a ResultSet.
- */
 public class InvoiceItemDataSource implements JRDataSource {
 
     private final List<InvoiceRequest.InvoiceItem> items;
@@ -25,7 +18,6 @@ public class InvoiceItemDataSource implements JRDataSource {
 
     @Override
     public boolean next() throws JRException {
-        // Move to next row — returns false when no more rows
         currentIndex++;
         return currentIndex < items.size();
     }

@@ -9,41 +9,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
-@Aspect        // tells Spring: this class contains AOP advice
-@Component     // makes it a Spring bean so Spring can proxy it
+@Aspect
+@Component
 public class LoggingAspect {
 
     private static final Logger log =
             LoggerFactory.getLogger(LoggingAspect.class);
 
-    /**
-     * Pointcut definition — reusable expression.
-     *
-     * Matches ALL methods in ALL classes inside any package
-     * named "service" under com.scalecart.product.
-     *
-     * Breakdown of expression:
-     * execution(          — match method executions
-     *   *                 — any return type
-     *   com.scalecart.product.service.  — in this package
-     *   *                 — any class name
-     *   .                 — dot separator
-     *   *                 — any method name
-     *   (..)              — any number of parameters of any type
-     * )
-     */
     @Pointcut("execution(* com.scalecart.order.service.*.*(..))")
-    public void serviceLayerPointcut() {
-        // Empty — this method is just a named pointcut reference
-        // Advice annotations reference this method name
-    }
+    public void serviceLayerPointcut() {}
 
-    /**
-     * @Around advice — wraps the entire method execution.
-     *
-     * ProceedingJoinPoint gives you control over WHEN the real
-     * method runs (via proceed()). Regular JoinPoint cannot do this.
-     */
     @Around("serviceLayerPointcut()")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint)
             throws Throwable {
@@ -58,7 +33,6 @@ public class LoggingAspect {
         long startTime = System.currentTimeMillis();
 
         try {
-            // THIS is where the actual service method runs
             Object result = joinPoint.proceed();
 
             long executionTime = System.currentTimeMillis() - startTime;
@@ -75,30 +49,17 @@ public class LoggingAspect {
                     className, methodName, executionTime,
                     e.getClass().getSimpleName(), e.getMessage());
 
-            // Re-throw — don't swallow exceptions in aspects
             throw e;
         }
     }
 
-    /**
-     * @Before advice — fires before method starts.
-     * Useful for argument validation logging.
-     * Cannot stop the method from running (use @Around for that).
-     */
     @Before("serviceLayerPointcut()")
     public void logBefore(JoinPoint joinPoint) {
-        // Intentionally minimal — @Around already logs entry
-        // Keeping this to demonstrate @Before exists and when to use it
         log.debug("@Before: {}.{}",
                 joinPoint.getTarget().getClass().getSimpleName(),
                 joinPoint.getSignature().getName());
     }
 
-    /**
-     * @AfterThrowing — fires ONLY when the method throws an exception.
-     * Good for audit logging: "method X threw exception Y with args Z"
-     * Note: exception still propagates — this doesn't catch it
-     */
     @AfterThrowing(
             pointcut = "serviceLayerPointcut()",
             throwing  = "exception"
@@ -111,10 +72,6 @@ public class LoggingAspect {
                 exception.getMessage());
     }
 
-    /**
-     * @AfterReturning — fires ONLY on successful return (no exception).
-     * returnValue gives you access to what the method returned.
-     */
     @AfterReturning(
             pointcut  = "serviceLayerPointcut()",
             returning = "returnValue"

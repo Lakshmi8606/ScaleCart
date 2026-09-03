@@ -14,8 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    // Order Service only needs the queue — exchange and binding
-    // are declared by Payment Service (the producer owns the topology)
+    // Queue only; Payment Service declares the exchange and binding
     @Bean
     public Queue orderStatusUpdateQueue() {
         return new Queue("order-status-update", true);

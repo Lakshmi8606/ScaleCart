@@ -24,25 +24,16 @@ public class RabbitMQConfig {
     @Value("${rabbitmq.queue.order-status-update}")
     private String orderStatusUpdateQueue;
 
-    // ── Declare the Queue ──────────────────────────────────────────────
-    // durable=true: queue survives RabbitMQ restart (messages not lost)
     @Bean
     public Queue orderStatusUpdateQueue() {
         return new Queue(orderStatusUpdateQueue, true);
     }
 
-    // ── Declare the Exchange ───────────────────────────────────────────
-    // DirectExchange: routes messages by exact routing key match
-    // durable=true: exchange survives RabbitMQ restart
     @Bean
     public DirectExchange paymentExchange() {
         return new DirectExchange(paymentExchange, true, false);
     }
 
-    // ── Declare the Binding ────────────────────────────────────────────
-    // Connects exchange → queue via routing key
-    // When producer sends to paymentExchange with key "payment.paid"
-    // → message lands in orderStatusUpdateQueue
     @Bean
     public Binding orderStatusBinding() {
         return BindingBuilder
@@ -51,9 +42,6 @@ public class RabbitMQConfig {
                 .with(orderPaidRoutingKey);
     }
 
-    // ── Message Converter ──────────────────────────────────────────────
-    // Converts Java objects to JSON for RabbitMQ messages
-    // Without this, Spring uses Java serialization (binary, not human-readable)
     @Bean
     public MessageConverter jsonMessageConverter() {
         ObjectMapper mapper = new ObjectMapper();
@@ -62,8 +50,6 @@ public class RabbitMQConfig {
         return new Jackson2JsonMessageConverter(mapper);
     }
 
-    // ── RabbitTemplate ─────────────────────────────────────────────────
-    // The main class for publishing messages — equivalent of KafkaTemplate
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);

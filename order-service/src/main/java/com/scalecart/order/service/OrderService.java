@@ -27,36 +27,29 @@ public class OrderService {
         this.orderEventProducer = orderEventProducer;
     }
 
-    // THE CRITICAL METHOD - @Transactional makes all DB operations atomic
-    // If ANY line inside throws an exception, ALL DB changes are rolled back
     @Transactional
     public Order checkout(Long userId, String shippingAddress) {
 
-        // Step 1: Find the user's cart
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalStateException(
                         "No cart found for user: " + userId));
 
-        // Step 2: Validate cart is not empty
         if (cart.getItems().isEmpty()) {
             throw new IllegalStateException(
                     "Cannot checkout with an empty cart");
         }
 
-        // Step 3: Calculate total amount from cart items
         BigDecimal totalAmount = cart.getItems().stream()
                 .map(item -> item.getPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Step 4: Create the Order
         Order order = new Order();
         order.setUserId(userId);
         order.setShippingAddress(shippingAddress);
         order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.PENDING);
 
-        // Step 5: Convert CartItems → OrderItems
         List<OrderItem> orderItems = cart.getItems().stream()
                 .map(cartItem -> new OrderItem(
                         order,
@@ -69,14 +62,11 @@ public class OrderService {
 
         order.setItems(orderItems);
 
-        // Step 6: Save the order
         Order savedOrder = orderRepository.save(order);
 
-        // Step 7: Clear the cart
         cart.getItems().clear();
         cartRepository.save(cart);
 
-        // Step 8: Publish Kafka event AFTER successful DB save
         OrderCreatedEvent event = new OrderCreatedEvent(
                 savedOrder.getId(),
                 savedOrder.getUserId(),
@@ -95,7 +85,6 @@ public class OrderService {
 
         orderEventProducer.publishOrderCreated(event);
 
-        // Return the saved order
         return savedOrder;
     }
 
@@ -120,7 +109,6 @@ public class OrderService {
     public Order cancelOrder(Long orderId, Long userId) {
         Order order = getOrderById(orderId, userId);
 
-        // Business rule: can only cancel PENDING orders
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalStateException(
                     "Only PENDING orders can be cancelled. Current status: "

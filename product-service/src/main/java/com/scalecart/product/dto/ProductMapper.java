@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 
 public class ProductMapper {
 
-    // Private constructor - this is a utility class, never instantiate it
     private ProductMapper() {}
 
     public static ProductResponse toResponse(Product product) {
@@ -20,7 +19,6 @@ public class ProductMapper {
         response.setCreatedAt(product.getCreatedAt());
         response.setUpdatedAt(product.getUpdatedAt());
 
-        // Extract only what the client needs from Category
         if (product.getCategory() != null) {
             response.setCategoryId(product.getCategory().getId());
             response.setCategoryName(product.getCategory().getName());

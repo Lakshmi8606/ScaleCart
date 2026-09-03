@@ -2,19 +2,14 @@ package com.scalecart.payment.dto;
 
 public class WebhookPayload {
 
-    // Event type from gateway: "payment.success", "payment.failed"
     private String event;
 
-    // Your internal payment ID (you'd embed this when initiating payment)
     private Long paymentId;
 
-    // Gateway's own transaction reference
     private String gatewayTransactionId;
 
-    // Failure reason (populated only for payment.failed events)
     private String failureReason;
 
-    // The raw JSON body - stored for audit trail
     private String rawPayload;
 
     public WebhookPayload() {}

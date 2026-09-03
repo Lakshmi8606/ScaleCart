@@ -48,28 +48,24 @@ class PaymentServiceTest {
     @BeforeEach
     void setUp() {
 
-        // Kafka topic used by PaymentService
         ReflectionTestUtils.setField(
                 paymentService,
                 "orderPaidTopic",
                 "order.paid"
         );
 
-        // RabbitMQ exchange used by PaymentService
         ReflectionTestUtils.setField(
                 paymentService,
                 "paymentExchange",
                 "payment.exchange"
         );
 
-        // RabbitMQ routing key used by PaymentService
         ReflectionTestUtils.setField(
                 paymentService,
                 "orderPaidRoutingKey",
                 "order.paid"
         );
 
-        // Valid payment request
         validRequest = new PaymentInitiateRequest();
         validRequest.setOrderId(1L);
         validRequest.setUserId(1L);
@@ -77,7 +73,6 @@ class PaymentServiceTest {
         validRequest.setIdempotencyKey("unique-key-abc-123");
         validRequest.setGateway("razorpay");
 
-        // Existing payment
         existingPayment = new Payment();
         existingPayment.setOrderId(1L);
         existingPayment.setUserId(1L);
@@ -160,7 +155,6 @@ class PaymentServiceTest {
         when(paymentRepository.save(any(Payment.class)))
                 .thenReturn(existingPayment);
 
-        // Mock Kafka send
         when(kafkaTemplate.send(
                 anyString(),
                 anyString(),
@@ -184,7 +178,6 @@ class PaymentServiceTest {
         assertThat(result.getGatewayResponse())
                 .contains("captured");
 
-        // Verify Kafka event
         verify(kafkaTemplate)
                 .send(
                         eq("order.paid"),
@@ -192,7 +185,6 @@ class PaymentServiceTest {
                         any(OrderPaidEvent.class)
                 );
 
-        // Verify RabbitMQ event
         verify(rabbitTemplate)
                 .convertAndSend(
                         eq("payment.exchange"),

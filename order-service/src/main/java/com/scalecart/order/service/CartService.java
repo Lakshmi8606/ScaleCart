@@ -28,7 +28,6 @@ public class CartService {
 
         Cart cart = getOrCreateCart(userId);
 
-        // Check if product already in cart - update quantity instead of adding
         cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(productId))
                 .findFirst()
@@ -48,7 +47,7 @@ public class CartService {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalStateException("Cart not found"));
 
-        // removeIf + orphanRemoval = automatic DELETE from DB
+        // orphanRemoval deletes the row when removed from the collection
         cart.getItems().removeIf(
                 item -> item.getProductId().equals(productId));
 

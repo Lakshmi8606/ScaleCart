@@ -26,7 +26,6 @@ public class OrderCreatedEvent {
         this.createdAt = createdAt;
     }
 
-    // Nested class - item details inside the event
     public static class OrderItemDetail {
         private Long productId;
         private String productName;

@@ -28,7 +28,6 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Many users can have many roles -> join table "user_roles"
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -45,8 +44,6 @@ public class User {
         this.email = email;
         this.password = password;
     }
-
-    // Getters and setters
 
     public Long getId() {
         return id;

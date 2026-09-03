@@ -15,7 +15,6 @@ public class PaymentInitiateRequest {
     @DecimalMin(value = "1.00", message = "Amount must be at least ₹1")
     private BigDecimal amount;
 
-    // Client generates this UUID before sending - for idempotency
     @NotBlank(message = "Idempotency key is required")
     private String idempotencyKey;
 

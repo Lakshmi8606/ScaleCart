@@ -38,7 +38,6 @@ public class UserRegistrationService {
         user.setUsername(username);
         user.setEmail(email);
 
-        // NEVER store the raw password - always hash it with BCrypt
         user.setPassword(passwordEncoder.encode(rawPassword));
 
         Role defaultRole = roleRepository.findByName("ROLE_USER")

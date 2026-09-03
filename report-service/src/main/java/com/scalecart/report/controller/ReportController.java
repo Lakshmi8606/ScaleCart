@@ -32,26 +32,17 @@ public class ReportController {
 
         byte[] pdfBytes = reportService.generateInvoicePdf(request);
 
-        // Tell browser/client this is a PDF file download
         HttpHeaders headers = new HttpHeaders();
-
-        // application/pdf - browser knows it's a PDF
         headers.setContentType(MediaType.APPLICATION_PDF);
-
-        // attachment = download as file (not display inline)
-        // filename = what the downloaded file will be named
         headers.setContentDispositionFormData(
                 "attachment",
                 "invoice-order-" + request.getOrderId() + ".pdf"
         );
-
-        // Content-Length helps browser show download progress bar
         headers.setContentLength(pdfBytes.length);
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
-    // Health check endpoint for this service
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Report Service is running");

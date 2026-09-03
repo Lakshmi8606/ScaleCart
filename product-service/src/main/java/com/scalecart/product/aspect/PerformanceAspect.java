@@ -15,7 +15,6 @@ public class PerformanceAspect {
     private static final Logger log =
             LoggerFactory.getLogger(PerformanceAspect.class);
 
-    // Threshold above which we consider a method "slow"
     private static final long SLOW_METHOD_THRESHOLD_MS = 500;
 
     // Controller, service, repository only — exclude security filters/config
@@ -32,7 +31,6 @@ public class PerformanceAspect {
         Object result = joinPoint.proceed();
         long duration = System.currentTimeMillis() - start;
 
-        // Only log if method is slow — avoids log spam in normal operation
         if (duration > SLOW_METHOD_THRESHOLD_MS) {
             log.warn("SLOW METHOD DETECTED: {}.{}() took {}ms " +
                             "(threshold: {}ms)",

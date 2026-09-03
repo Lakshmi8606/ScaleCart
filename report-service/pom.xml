@@ -28,12 +28,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- JasperReports core engine -->
+        <!-- JasperReports -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>6.20.6</version>
-            <!-- Exclude commons-logging - Spring uses its own logging -->
+            <!-- Spring provides its own logging -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -42,14 +42,14 @@
             </exclusions>
         </dependency>
 
-        <!-- JasperReports needs this for PDF font rendering -->
+        <!-- JasperReports fonts -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-fonts</artifactId>
             <version>6.20.6</version>
         </dependency>
 
-        <!-- iText - JasperReports uses this under the hood for PDF -->
+        <!-- iText -->
         <dependency>
             <groupId>com.lowagie</groupId>
             <artifactId>itext</artifactId>

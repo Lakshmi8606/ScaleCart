@@ -27,7 +27,6 @@ public class ProductService {
         this.categoryRepository = categoryRepository;
     }
 
-    // Cache individual product by ID
     @TrackExecutionTime
     @Cacheable(value = "product", key = "#id")
     public Product getProductById(Long id) {
@@ -36,13 +35,11 @@ public class ProductService {
                         "Product not found with id: " + id));
     }
 
-    // Cache all active products
     @Cacheable(value = "products", key = "#pageable")
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findByActiveTrue(pageable);
     }
 
-    // Cache products by category
     @Cacheable(value = "products-by-category",
             key = "#categoryId + '-' + #pageable")
     public Page<Product> getProductsByCategory(Long categoryId,
@@ -51,7 +48,6 @@ public class ProductService {
                 categoryId, pageable);
     }
 
-    // Cache search results
     @Cacheable(value = "products-search",
             key = "#name + '-' + #pageable")
     public Page<Product> searchProducts(String name,
@@ -61,7 +57,6 @@ public class ProductService {
                         name, pageable);
     }
 
-    // Create Product
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = {
             "product",
@@ -89,7 +84,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    // Update Product
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = {
             "product",
@@ -135,7 +129,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    // Save Product
     @CacheEvict(value = {
             "product",
             "products",
@@ -147,7 +140,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    // Soft Delete Product
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = {
             "product",

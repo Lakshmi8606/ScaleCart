@@ -20,21 +20,10 @@ public class InvoiceReportService {
     // Compiled report cached at field level — expensive to compile every request
     private JasperReport compiledReport;
 
-    /**
-     * Generates a PDF invoice as byte array.
-     *
-     * Three-step JasperReports pipeline:
-     * 1. Compile .jrxml → JasperReport (cached after first call)
-     * 2. Fill  JasperReport + data → JasperPrint
-     * 3. Export JasperPrint → PDF bytes
-     */
     public byte[] generateInvoicePdf(InvoiceRequest request) {
         try {
-            // ── Step 1: Compile (cached after first call) ──────────
             JasperReport jasperReport = getCompiledReport();
 
-            // ── Step 2: Build parameters map ──────────────────────
-            // Parameters = single values passed to $P{...} in JRXML
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("orderId",         request.getOrderId());
             parameters.put("userId",          request.getUserId());
@@ -44,16 +33,12 @@ public class InvoiceReportService {
             parameters.put("invoiceNumber",   "INV-" + request.getOrderId()
                     + "-" + System.currentTimeMillis());
 
-            // ── Step 3: Build data source ─────────────────────────
-            // Data source = repeating rows for $F{...} in detail band
             InvoiceItemDataSource dataSource =
                     new InvoiceItemDataSource(request.getItems());
 
-            // ── Step 4: Fill report ───────────────────────────────
             JasperPrint jasperPrint = JasperFillManager.fillReport(
                     jasperReport, parameters, dataSource);
 
-            // ── Step 5: Export to PDF bytes ───────────────────────
             byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
             log.info("Generated PDF invoice for orderId={}, size={} bytes",
@@ -68,14 +53,6 @@ public class InvoiceReportService {
         }
     }
 
-    /**
-     * Compiles the .jrxml template once and caches the result.
-     *
-     * Why cache? JasperCompileManager.compileReport() reads and parses
-     * the XML template — expensive. The compiled JasperReport is
-     * thread-safe and reusable. Caching it means the first request
-     * pays the compilation cost, all subsequent requests get it free.
-     */
     private synchronized JasperReport getCompiledReport() throws JRException {
         if (compiledReport == null) {
             log.info("Compiling JasperReport template (first request only)...");

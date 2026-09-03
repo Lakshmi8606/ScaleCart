@@ -28,15 +28,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public - anyone can browse products (no JWT needed)
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
-                        // Swagger UI - open for demo purposes
                         .requestMatchers("/swagger-ui/**",
                                 "/v3/api-docs/**").permitAll()
-                        // Actuator health - open
                         .requestMatchers("/actuator/**").permitAll()
-                        // Everything else needs authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter,

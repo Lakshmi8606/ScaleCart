@@ -27,8 +27,7 @@ public class PaymentController {
 
         PaymentResponse response = paymentService.initiatePayment(request);
 
-        // If duplicate: return 200 OK (not 201) — no new resource was created
-        // If new: return 201 Created
+        // 200 for duplicates (no new resource); 201 for new payments
         HttpStatus status = response.isDuplicate()
                 ? HttpStatus.OK
                 : HttpStatus.CREATED;

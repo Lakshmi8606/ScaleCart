@@ -24,7 +24,6 @@ public class InvoiceRequest {
     @NotNull(message = "Items are required")
     private List<InvoiceItem> items;
 
-    // Nested DTO for each line item
     public static class InvoiceItem {
         private String productName;
         private Integer quantity;
@@ -32,7 +31,7 @@ public class InvoiceRequest {
 
         public InvoiceItem() {}
 
-        // lineTotal computed here — not stored in DB, just for report display
+        // Computed for report display; not stored
         public BigDecimal getLineTotal() {
             return price.multiply(BigDecimal.valueOf(quantity));
         }

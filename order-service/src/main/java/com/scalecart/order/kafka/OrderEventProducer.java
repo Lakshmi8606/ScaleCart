@@ -28,8 +28,7 @@ public class OrderEventProducer {
 
     public void publishOrderCreated(OrderCreatedEvent event) {
 
-        // Key = orderId as String - Kafka uses key for partition routing
-        // Same orderId always goes to same partition = ordered processing
+        // Keyed by orderId so the same order stays on one partition
         String key = event.getOrderId().toString();
 
         CompletableFuture<SendResult<String, OrderCreatedEvent>> future =

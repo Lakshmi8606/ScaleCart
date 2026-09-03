@@ -10,13 +10,10 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // Get all active products - paginated
     Page<Product> findByActiveTrue(Pageable pageable);
 
-    // Get all active products in a category - paginated
     Page<Product> findByCategoryIdAndActiveTrue(Long categoryId, Pageable pageable);
 
-    // Search by name (case-insensitive contains)
     Page<Product> findByNameContainingIgnoreCaseAndActiveTrue(
             String name, Pageable pageable);
 

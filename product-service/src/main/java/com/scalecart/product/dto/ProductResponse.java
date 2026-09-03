@@ -10,7 +10,7 @@ public class ProductResponse {
     private String description;
     private BigDecimal price;
     private Integer stockQuantity;
-    private String categoryName;   // just the name, not the whole Category object
+    private String categoryName;
     private Long categoryId;
     private String imageUrl;
     private boolean active;
@@ -19,7 +19,6 @@ public class ProductResponse {
 
     public ProductResponse() {}
 
-    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }

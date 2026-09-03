@@ -23,7 +23,6 @@ public class PagedResponse<T> {
         this.last = last;
     }
 
-    // Getters and setters
     public List<T> getContent() { return content; }
     public void setContent(List<T> content) { this.content = content; }
     public int getPageNumber() { return pageNumber; }

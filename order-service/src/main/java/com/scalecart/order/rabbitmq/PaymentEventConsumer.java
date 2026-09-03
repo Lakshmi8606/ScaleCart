@@ -21,8 +21,6 @@ public class PaymentEventConsumer {
         this.orderRepository = orderRepository;
     }
 
-    // @RabbitListener: listens to this queue
-    // Spring calls this method for every message that arrives
     @RabbitListener(queues = "${rabbitmq.queue.order-status-update}")
     @Transactional
     public void handlePaymentConfirmed(PaymentConfirmedEvent event) {
@@ -35,16 +33,13 @@ public class PaymentEventConsumer {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Order not found: " + event.getOrderId()));
 
-        // Guard: only update if currently PENDING
-        // Idempotency protection — if this message is delivered twice
-        // (at-least-once delivery), second processing is a no-op
+        // Idempotent: skip if already processed (at-least-once delivery)
         if (order.getStatus() != OrderStatus.PENDING) {
             log.warn("Order {} is already in status {} — skipping update",
                     event.getOrderId(), order.getStatus());
             return;
         }
 
-        // PENDING → CONFIRMED
         order.setStatus(OrderStatus.CONFIRMED);
         orderRepository.save(order);
 

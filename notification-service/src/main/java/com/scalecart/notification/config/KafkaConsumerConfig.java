@@ -59,23 +59,15 @@ public class KafkaConsumerConfig {
 
         factory.setConsumerFactory(consumerFactory);
 
-        // ── DLQ + Retry Configuration ──────────────────────────────
-        // DeadLetterPublishingRecoverer: after all retries exhausted,
-        // publish failed message to "<topic>.DLT" (Dead Letter Topic)
-        // order.created → order.created.DLT
         DeadLetterPublishingRecoverer recoverer =
                 new DeadLetterPublishingRecoverer(kafkaTemplate);
 
-        // FixedBackOff: retry N times with fixed interval between retries
-        // FixedBackOff(intervalMs, maxAttempts)
-        // 2000ms between retries, maxRetryAttempts total attempts
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(
                 recoverer,
                 new FixedBackOff(2000L, maxRetryAttempts)
         );
 
-        // These exceptions are NOT retried — immediate DLQ
-        // (retrying a deserialization error will always fail — pointless)
+        // Deserialization failures are not retryable
         errorHandler.addNotRetryableExceptions(
                 org.apache.kafka.common.errors.SerializationException.class
         );

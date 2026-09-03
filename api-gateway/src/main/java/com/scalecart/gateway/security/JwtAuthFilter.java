@@ -32,12 +32,10 @@ public class JwtAuthFilter extends
             String path = exchange.getRequest().getPath().toString();
             log.info("Gateway processing request: {}", path);
 
-            // Extract Authorization header
             String authHeader = exchange.getRequest()
                     .getHeaders()
                     .getFirst(HttpHeaders.AUTHORIZATION);
 
-            // No token present
             if (authHeader == null || authHeader.isBlank()) {
                 log.warn("Gateway: missing JWT for path={}", path);
                 return onError(exchange, HttpStatus.UNAUTHORIZED,
@@ -51,16 +49,13 @@ public class JwtAuthFilter extends
                         "Missing or invalid Authorization header");
             }
 
-            // Validate JWT using RSA public key
             if (!jwtService.isTokenValid(token)) {
                 log.warn("Gateway: invalid JWT for path={}", path);
                 return onError(exchange, HttpStatus.UNAUTHORIZED,
                         "Invalid or expired JWT token");
             }
 
-            // Token valid — extract email and forward as header
-            // Downstream services can trust X-User-Email since it
-            // was set by the gateway after JWT validation
+            // Downstream services can trust X-User-Email after gateway JWT validation
             String email = jwtService.extractEmail(token);
 
             ServerWebExchange mutatedExchange = exchange.mutate()
@@ -72,15 +67,10 @@ public class JwtAuthFilter extends
             log.info("Gateway: JWT valid for user={}, forwarding to {}",
                     email, path);
 
-            // Continue filter chain with mutated request
             return chain.filter(mutatedExchange);
         };
     }
 
-    /**
-     * Returns an error response without forwarding to the service.
-     * Mono.empty() = reactive equivalent of "done, nothing more to do"
-     */
     private Mono<Void> onError(ServerWebExchange exchange,
                                HttpStatus status, String message) {
         exchange.getResponse().setStatusCode(status);
@@ -100,7 +90,5 @@ public class JwtAuthFilter extends
         return null;
     }
 
-    // Config class required by AbstractGatewayFilterFactory
-    // Empty for now — could hold filter configuration params
     public static class Config {}
 }

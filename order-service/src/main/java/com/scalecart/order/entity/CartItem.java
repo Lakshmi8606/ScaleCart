@@ -13,8 +13,6 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ManyToOne: many items belong to one cart
-    // FetchType.LAZY: don't load the Cart object unless explicitly needed
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     @JsonBackReference

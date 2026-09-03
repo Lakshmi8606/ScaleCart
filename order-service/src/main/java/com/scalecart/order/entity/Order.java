@@ -21,8 +21,7 @@ public class Order {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    // Store enum as String in DB ("PENDING", "CONFIRMED") not as integer
-    // EnumType.STRING is readable; EnumType.ORDINAL breaks if you reorder the enum
+    // STRING so reordering the enum does not break existing rows
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private OrderStatus status = OrderStatus.PENDING;

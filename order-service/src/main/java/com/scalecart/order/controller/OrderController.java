@@ -23,7 +23,6 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // POST /api/orders/checkout - THE main endpoint
     @PostMapping("/checkout")
     public ResponseEntity<Order> checkout(
             @Valid @RequestBody CheckoutRequest request) {

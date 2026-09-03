@@ -19,9 +19,6 @@ public class Cart {
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
 
-    // OneToMany: one cart has many items
-    // CascadeType.ALL: save/delete cart → automatically save/delete its items
-    // orphanRemoval: if you remove an item from the list, it's deleted from DB too
     @OneToMany(mappedBy = "cart",
             cascade = CascadeType.ALL,
             orphanRemoval = true,

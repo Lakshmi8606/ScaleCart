@@ -18,7 +18,7 @@
 
     <dependencies>
 
-        <!-- Web — needed for health endpoints and Actuator -->
+        <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -30,13 +30,13 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <!-- Email sending via JavaMailSender -->
+        <!-- Mail -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
-        <!-- Actuator for health checks -->
+        <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

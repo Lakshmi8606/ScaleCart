@@ -21,7 +21,6 @@ public class Payment {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    // The star of today — unique constraint enforced at DB level
     @Column(name = "idempotency_key", nullable = false, unique = true, length = 100)
     private String idempotencyKey;
 
@@ -35,7 +34,6 @@ public class Payment {
     @Column(name = "gateway_transaction_id", length = 200)
     private String gatewayTransactionId;
 
-    // Raw gateway JSON response - TEXT in DB, String in Java
     @Column(name = "gateway_response", columnDefinition = "TEXT")
     private String gatewayResponse;
 
@@ -55,7 +53,6 @@ public class Payment {
 
     public Payment() {}
 
-    // Getters and setters
     public Long getId() { return id; }
     public Long getOrderId() { return orderId; }
     public void setOrderId(Long orderId) { this.orderId = orderId; }

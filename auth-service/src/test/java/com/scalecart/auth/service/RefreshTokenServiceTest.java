@@ -31,7 +31,6 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should create refresh token and persist it")
     void createRefreshToken_Success() {
-        // Inject @Value field manually — @Value doesn't work in pure unit tests
         ReflectionTestUtils.setField(
                 refreshTokenService, "refreshTokenExpiryDays", 7L);
 
@@ -62,7 +61,7 @@ class RefreshTokenServiceTest {
         RefreshToken token = new RefreshToken(
                 "valid-uuid-token",
                 new User(),
-                LocalDateTime.now().plusDays(7)  // expires in future
+                LocalDateTime.now().plusDays(7)
         );
 
         when(refreshTokenRepository.findByToken("valid-uuid-token"))
@@ -81,7 +80,7 @@ class RefreshTokenServiceTest {
         RefreshToken expiredToken = new RefreshToken(
                 "expired-token",
                 new User(),
-                LocalDateTime.now().minusDays(1)  // expired yesterday
+                LocalDateTime.now().minusDays(1)
         );
 
         when(refreshTokenRepository.findByToken("expired-token"))

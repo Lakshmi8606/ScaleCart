@@ -32,8 +32,6 @@ public class EmailNotificationService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
 
-            // MimeMessageHelper: helper class for building HTML emails
-            // true = multipart (needed for HTML content)
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setFrom(fromEmail);
@@ -41,9 +39,8 @@ public class EmailNotificationService {
             helper.setSubject("Order Confirmed! #" + event.getOrderId()
                     + " — ScaleCart");
 
-            // Build HTML email body
             String htmlBody = buildOrderConfirmationHtml(event);
-            helper.setText(htmlBody, true); // true = isHtml
+            helper.setText(htmlBody, true);
 
             mailSender.send(message);
 
@@ -53,7 +50,6 @@ public class EmailNotificationService {
         } catch (MessagingException e) {
             log.error("Failed to send email for orderId={}: {}",
                     event.getOrderId(), e.getMessage());
-            // Re-throw as unchecked so Kafka listener's retry mechanism catches it
             throw new RuntimeException("Email sending failed", e);
         }
     }

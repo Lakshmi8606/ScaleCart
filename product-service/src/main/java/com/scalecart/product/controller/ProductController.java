@@ -26,7 +26,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // PUBLIC — anyone can browse products
     @GetMapping
     @Operation(
             summary = "Get all active products",
@@ -79,7 +78,6 @@ public class ProductController {
         );
     }
 
-    // PUBLIC — get single product by ID
     @GetMapping("/{id}")
     @Operation(summary = "Get product by ID")
     public ResponseEntity<ProductResponse> getProductById(
@@ -98,8 +96,6 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    // ADMIN only — create new product
-    // Note: @PreAuthorize will be added on Day 18 when method security is wired
     @PostMapping
     @Operation(summary = "Create a new product (Admin only)")
     public ResponseEntity<ProductResponse> createProduct(
@@ -111,7 +107,6 @@ public class ProductController {
                 .body(ProductMapper.toResponse(created));
     }
 
-    // ADMIN only — update existing product
     @PutMapping("/{id}")
     @Operation(summary = "Update a product (Admin only)")
     public ResponseEntity<ProductResponse> updateProduct(
@@ -128,7 +123,6 @@ public class ProductController {
         );
     }
 
-    // ADMIN only — soft delete product
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a product (Admin only)")
     public ResponseEntity<Void> deleteProduct(

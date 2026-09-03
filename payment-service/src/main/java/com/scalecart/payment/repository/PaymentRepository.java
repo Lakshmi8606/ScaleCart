@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    // THE idempotency check - called before every new payment
     Optional<Payment> findByIdempotencyKey(String idempotencyKey);
 
     Optional<Payment> findByOrderId(Long orderId);
