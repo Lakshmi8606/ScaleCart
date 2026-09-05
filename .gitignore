@@ -9,3 +9,6 @@ target/
 application.properties
 
 **/keys/private_key.pem
+
+# JMeter generated results and HTML dashboard
+scalecart-results/
