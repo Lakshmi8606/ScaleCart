@@ -27,4 +27,10 @@ Load-tested with Apache JMeter 5.6.3 (50–100 concurrent users).
 - Payment idempotency: **10** concurrent requests, same key, **1** payment created
 - APDEX: **0.944 (Excellent)**
 
+## Performance
+
+![JMeter APDEX dashboard](docs/screenshots/jmeter-apdex.png)
+
+![JMeter statistics](docs/screenshots/jmeter-statistics.png)
+
 Full numbers: [METRICS.md](METRICS.md)
