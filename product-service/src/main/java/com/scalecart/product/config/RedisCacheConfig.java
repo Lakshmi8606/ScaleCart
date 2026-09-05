@@ -46,11 +46,12 @@ public class RedisCacheConfig {
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(productSerializer));
 
-        // Generic serializer for Page/list caches (includes @class type info)
+        // List/page caches must not store Hibernate PageImpl or lazy proxies —
+        // those fail to deserialize and turn GET /api/products into HTTP 500.
         ObjectMapper polymorphicMapper = mapper.copy();
         polymorphicMapper.activateDefaultTyping(
                 BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("com.scalecart")
+                        .allowIfBaseType(Object.class)
                         .build(),
                 ObjectMapper.DefaultTyping.NON_FINAL,
                 JsonTypeInfo.As.PROPERTY);

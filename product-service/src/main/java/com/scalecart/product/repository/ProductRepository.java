@@ -10,10 +10,13 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    @EntityGraph(attributePaths = "category")
     Page<Product> findByActiveTrue(Pageable pageable);
 
+    @EntityGraph(attributePaths = "category")
     Page<Product> findByCategoryIdAndActiveTrue(Long categoryId, Pageable pageable);
 
+    @EntityGraph(attributePaths = "category")
     Page<Product> findByNameContainingIgnoreCaseAndActiveTrue(
             String name, Pageable pageable);
 

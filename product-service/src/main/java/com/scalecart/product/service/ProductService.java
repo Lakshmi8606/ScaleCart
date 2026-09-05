@@ -35,21 +35,19 @@ public class ProductService {
                         "Product not found with id: " + id));
     }
 
-    @Cacheable(value = "products", key = "#pageable")
+    @Transactional(readOnly = true)
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findByActiveTrue(pageable);
     }
 
-    @Cacheable(value = "products-by-category",
-            key = "#categoryId + '-' + #pageable")
+    @Transactional(readOnly = true)
     public Page<Product> getProductsByCategory(Long categoryId,
                                                Pageable pageable) {
         return productRepository.findByCategoryIdAndActiveTrue(
                 categoryId, pageable);
     }
 
-    @Cacheable(value = "products-search",
-            key = "#name + '-' + #pageable")
+    @Transactional(readOnly = true)
     public Page<Product> searchProducts(String name,
                                         Pageable pageable) {
         return productRepository
