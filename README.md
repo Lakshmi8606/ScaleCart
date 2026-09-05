@@ -11,7 +11,7 @@ A production-grade e-commerce microservices backend built with Java 17, Spring B
 | product-service | 8082 | Product catalog with Redis caching |
 | order-service | 8083 | Orders, cart, Kafka + RabbitMQ |
 | payment-service | 8084 | Payments with idempotency keys |
-| notification-service | — | Async email via Kafka consumer |
+| notification-service | 8085 | Async email via Kafka consumer |
 | report-service | 8086 | PDF invoice generation |
 
 ## Tech Stack

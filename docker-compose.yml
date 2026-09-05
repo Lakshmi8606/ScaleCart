@@ -166,6 +166,8 @@ services:
       context: .
       dockerfile: notification-service/Dockerfile
     container_name: scalecart-notification
+    ports:
+      - "8085:8085"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SPRING_MAIL_USERNAME: ${MAIL_USERNAME:-test@gmail.com}
