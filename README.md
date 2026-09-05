@@ -18,12 +18,13 @@ A production-grade e-commerce microservices backend built with Java 17, Spring B
 
 Java 17 | Spring Boot 3.x | PostgreSQL | Redis | Kafka | RabbitMQ | Docker | JMeter | Jenkins | AWS EC2
 
-Performance
+## Performance
 
 Load-tested with Apache JMeter 5.6.3 (50–100 concurrent users).
 
-Redis cache: average latency 379 ms → 64 ms (5.9x), throughput 2.0x
-Product list API: 100 concurrent users, 500 requests, 0% errors
-Payment idempotency: 10 concurrent requests, same key, 1 payment created
-APDEX: 0.944 (Excellent)
-Full numbers: METRICS.md
+- Redis cache: average latency **379 ms → 64 ms** (5.9x), throughput **2.0x**
+- Product list API: **100** concurrent users, **500** requests, **0%** errors
+- Payment idempotency: **10** concurrent requests, same key, **1** payment created
+- APDEX: **0.944 (Excellent)**
+
+Full numbers: [METRICS.md](METRICS.md)
