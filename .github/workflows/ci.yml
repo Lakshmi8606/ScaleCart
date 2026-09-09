@@ -25,8 +25,7 @@ jobs:
         run: |
           mvn test -B --no-transfer-progress \
             -pl auth-service,product-service \
-            -Dtest="*Test" \
-            --no-transfer-progress
+            -Dsurefire.excludes='**/*IntegrationTest.java'
 
       - name: Generate JaCoCo coverage report
         run: |
