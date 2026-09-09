@@ -102,8 +102,8 @@ pipeline {
             steps {
                 echo "Building Docker images with tag: ${IMAGE_TAG}"
 
-                // Build each service image from root context
-                // (Dockerfiles reference parent pom.xml)
+                // Copy JARs already produced by the Build stage.
+                // Do not compile inside Docker (that re-downloads Maven and takes hours).
                 script {
                     def services = [
                         'auth-service',
@@ -116,13 +116,14 @@ pipeline {
                     ]
 
                     services.each { service ->
-                        echo "Building ${service}..."
+                        echo "Building ${service} from pre-built JAR..."
                         sh """
+                            cp ${service}/target/${service}-1.0.0.jar ${service}/target/app.jar
                             docker build \
-                                -f ${service}/Dockerfile \
+                                -f jenkins/Dockerfile.runtime \
                                 -t ${DOCKER_USERNAME}/scalecart-${service}:${IMAGE_TAG} \
                                 -t ${DOCKER_USERNAME}/scalecart-${service}:latest \
-                                .
+                                ${service}
                         """
                     }
                 }

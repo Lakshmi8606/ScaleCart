@@ -1,0 +1,8 @@
+# Used by Jenkins only. JAR is already built in the Build stage.
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+RUN addgroup -S scalecart && adduser -S scalecart -G scalecart
+COPY --chown=scalecart:scalecart target/app.jar app.jar
+USER scalecart
+ENTRYPOINT ["java", "-Xmx256m", \
+    "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
