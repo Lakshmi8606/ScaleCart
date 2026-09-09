@@ -62,10 +62,13 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running unit tests across all services...'
-                // Run tests for all services in parallel modules
+                // Skip *IntegrationTest: Testcontainers/Ryuk cannot reach Docker
+                // from inside the Jenkins container (Docker Desktop).
+                // Unit tests still run. Coverage is published by GitHub Actions.
                 sh '''
                     mvn test -B --no-transfer-progress \
                         -pl auth-service,product-service,order-service,payment-service \
+                        -Dsurefire.excludes='**/*IntegrationTest.java' \
                         || exit 1
                 '''
             }
@@ -75,13 +78,6 @@ pipeline {
                     junit(
                         testResults: '**/target/surefire-reports/*.xml',
                         allowEmptyResults: true
-                    )
-
-                    // Publish JaCoCo coverage report
-                    jacoco(
-                        execPattern: '**/target/jacoco.exec',
-                        classPattern: '**/target/classes',
-                        sourcePattern: '**/src/main/java'
                     )
                 }
                 success {
