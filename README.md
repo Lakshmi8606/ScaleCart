@@ -32,3 +32,15 @@ Load-tested with Apache JMeter 5.6.3 (50–100 concurrent users).
 ![JMeter statistics](docs/screenshots/jmeter-statistics.png)
 
 Full numbers: [METRICS.md](METRICS.md)
+
+## CI/CD
+
+Jenkins pipeline on `main`: Checkout → Build → Test → Docker Build → Push → Deploy.
+
+- Build **#11** succeeded in **13 minutes**
+- Unit tests: **no failures**
+- 7 images pushed to Docker Hub (`lakshmidocker9847/scalecart-*:fc3bbbf`)
+
+![Jenkins build success](docs/screenshots/jenkins-build-success.png)
+
+![Jenkins pipeline stages](docs/screenshots/jenkins-pipeline-stages.png)
