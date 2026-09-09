@@ -40,6 +40,11 @@ Jenkins pipeline on `main`: Checkout → Build → Test → Docker Build → Pus
 - Build **#11** succeeded in **13 minutes**
 - Unit tests: **no failures**
 - 7 images pushed to Docker Hub (`lakshmidocker9847/scalecart-*:fc3bbbf`)
+- GitHub Actions CI on every push to `main`
+
+![Jenkins build success](docs/screenshots/jenkins-build-success.png)
+
+![Jenkins pipeline stages](docs/screenshots/jenkins-pipeline-stages.png)
 
 ![Jenkins build success](docs/screenshots/jenkins-build-success.png)
 
