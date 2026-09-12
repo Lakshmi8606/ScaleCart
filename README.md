@@ -16,7 +16,7 @@ A production-grade e-commerce microservices backend built with Java 17, Spring B
 
 ## Tech Stack
 
-Java 17 | Spring Boot 3.x | PostgreSQL | Redis | Kafka | RabbitMQ | Docker | JMeter | Jenkins | AWS EC2
+Java 17 | Spring Boot 3.x | PostgreSQL | Redis | Kafka | RabbitMQ | Docker | JMeter | Jenkins | Render | AWS EC2
 
 ## Performance
 
@@ -50,3 +50,20 @@ Jenkins pipeline on `main`: Checkout → Build → Test → Docker Build → Pus
 CI on every push to `main` (run **#4**, **38s**, tests passed).
 
 ![GitHub Actions CI](docs/screenshots/github-actions-ci.png)
+
+## Cloud (Render)
+
+Auth and product deployed from Docker Hub. DB is Supabase; cache is Upstash Redis.
+
+| Service | Live URL |
+|---------|----------|
+| Auth | https://scalecart-auth-service-latest.onrender.com/api/auth/register |
+| Product | https://scalecart-product-service-latest.onrender.com/api/products |
+
+- Register (cloud): `201` — User registered successfully
+- Product list: **3** items, health **UP**
+- Redis: first GET `/api/products/1` **14s** → second **0.74s**
+
+![Render — both services Deployed](docs/screenshots/render-services-live.png)
+
+*Render dashboard: scalecart-auth and scalecart-product live in Singapore.*
