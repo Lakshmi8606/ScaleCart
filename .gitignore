@@ -7,8 +7,11 @@ target/
 .DS_Store
 *.env
 application.properties
+application-prod.properties
 
 **/keys/private_key.pem
 
 # JMeter generated results and HTML dashboard
 scalecart-results/
+
+*.pem
