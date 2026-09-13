@@ -168,13 +168,25 @@ pipeline {
             }
         }
 
-        // ── Stage 6: Deploy (Optional for now) ────────────────────────
+        // ── Stage 6: Deploy to Render ────────────────────────────────
+        // After images are on Docker Hub, ping Render deploy hooks.
+        // Render pulls :latest and restarts with env vars already set
+        // in the dashboard (DB/Redis secrets never go in Git).
         stage('Deploy') {
+            when {
+                branch 'main'
+            }
             steps {
-                echo "Deployment stage — Day 26 (AWS EC2)"
-                echo "Images pushed: ${DOCKER_USERNAME}/scalecart-*:${IMAGE_TAG}"
-                echo "To deploy: docker-compose pull && docker-compose up -d"
-                // Day 26: SSH into EC2 and run docker-compose pull + up
+                echo "Triggering Render deploy for auth + product (${IMAGE_TAG})"
+                withCredentials([
+                    string(credentialsId: 'render-auth-deploy-hook', variable: 'AUTH_HOOK'),
+                    string(credentialsId: 'render-product-deploy-hook', variable: 'PRODUCT_HOOK')
+                ]) {
+                    sh 'curl -fsS -X POST "$AUTH_HOOK"'
+                    sh 'curl -fsS -X POST "$PRODUCT_HOOK"'
+                }
+                echo 'Render is pulling lakshmidocker9847/scalecart-auth-service:latest'
+                echo 'Render is pulling lakshmidocker9847/scalecart-product-service:latest'
             }
         }
     }
