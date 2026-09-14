@@ -174,7 +174,10 @@ pipeline {
         // in the dashboard (DB/Redis secrets never go in Git).
         stage('Deploy') {
             when {
-                branch 'main'
+                anyOf {
+                    branch 'main'
+                    branch 'origin/main'
+                }
             }
             steps {
                 echo "Triggering Render deploy for auth + product (${IMAGE_TAG})"
