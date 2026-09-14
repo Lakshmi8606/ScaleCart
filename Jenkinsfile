@@ -173,23 +173,24 @@ pipeline {
         // Render pulls :latest and restarts with env vars already set
         // in the dashboard (DB/Redis secrets never go in Git).
         stage('Deploy') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'origin/main'
-                }
-            }
             steps {
-                echo "Triggering Render deploy for auth + product (${IMAGE_TAG})"
+                echo "Branch=${env.GIT_BRANCH} — triggering Render for auth + product (${IMAGE_TAG})"
                 withCredentials([
                     string(credentialsId: 'render-auth-deploy-hook', variable: 'AUTH_HOOK'),
                     string(credentialsId: 'render-product-deploy-hook', variable: 'PRODUCT_HOOK')
                 ]) {
-                    sh 'curl -fsS -X POST "$AUTH_HOOK"'
-                    sh 'curl -fsS -X POST "$PRODUCT_HOOK"'
+                    sh '''
+                        set -e
+                        if command -v curl >/dev/null 2>&1; then
+                          curl -fsS -X POST "$AUTH_HOOK"
+                          curl -fsS -X POST "$PRODUCT_HOOK"
+                        else
+                          wget -qO- --method=POST "$AUTH_HOOK"
+                          wget -qO- --method=POST "$PRODUCT_HOOK"
+                        fi
+                    '''
                 }
-                echo 'Render is pulling lakshmidocker9847/scalecart-auth-service:latest'
-                echo 'Render is pulling lakshmidocker9847/scalecart-product-service:latest'
+                echo 'Render should now pull :latest for auth and product'
             }
         }
     }
