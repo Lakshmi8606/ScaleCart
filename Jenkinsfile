@@ -43,10 +43,18 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Compiling all modules...'
-                // -DskipTests: compile only, tests run in next stage
-                // -B: batch mode (no color output — cleaner Jenkins logs)
-                // --no-transfer-progress: suppress download progress spam
-                sh 'mvn clean package -DskipTests -B --no-transfer-progress'
+                // Private key is not in Git. Jenkins copies it from a secret
+                // file so the auth JAR (and Docker image) can sign JWTs on Render.
+                withCredentials([file(
+                    credentialsId: 'auth-jwt-private-key',
+                    variable: 'AUTH_PRIVKEY'
+                )]) {
+                    sh '''
+                        mkdir -p auth-service/src/main/resources/keys
+                        cp "$AUTH_PRIVKEY" auth-service/src/main/resources/keys/private_key.pem
+                        mvn clean package -DskipTests -B --no-transfer-progress
+                    '''
+                }
             }
             post {
                 success {
