@@ -165,11 +165,17 @@ pipeline {
 
                         services.each { service ->
                             echo "Pushing ${service}..."
-                            sh "docker push ${DOCKER_USERNAME}/scalecart-${service}:${IMAGE_TAG}"
-                            sh "docker push ${DOCKER_USERNAME}/scalecart-${service}:latest"
+                            // Hub often drops the token request mid-batch
+                            // (failed to fetch oauth token ... EOF). Retry + re-login.
+                            retry(3) {
+                                sh """
+                                    echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+                                    docker push ${DOCKER_USERNAME}/scalecart-${service}:${IMAGE_TAG}
+                                    docker push ${DOCKER_USERNAME}/scalecart-${service}:latest
+                                """
+                            }
                         }
 
-                        // Logout after push — security best practice
                         sh 'docker logout'
                     }
                 }
