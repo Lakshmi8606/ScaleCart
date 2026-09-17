@@ -1,0 +1,131 @@
+{
+  "info": {
+    "name": "ScaleCart API",
+    "description": "Complete API collection for ScaleCart microservices backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "gateway_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "url": "{{gateway_url}}/api/auth/register",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"demo\",\"email\":\"demo@scalecart.com\",\"password\":\"Demo@1234\"}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": ["var json = pm.response.json();",
+                       "pm.collectionVariables.set('access_token', json.accessToken);"]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "url": "{{gateway_url}}/api/auth/login",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"demo@scalecart.com\",\"password\":\"Demo@1234\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "url": "{{gateway_url}}/api/products?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{gateway_url}}/api/products/1"
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "url": "{{gateway_url}}/api/products?search=iphone"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Add to Cart",
+          "request": {
+            "method": "POST",
+            "url": "{{gateway_url}}/api/cart/add",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"userId\":1,\"productId\":1,\"productName\":\"iPhone 15\",\"price\":79999.00,\"quantity\":1}"
+            }
+          }
+        },
+        {
+          "name": "Checkout",
+          "request": {
+            "method": "POST",
+            "url": "{{gateway_url}}/api/orders/checkout",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{access_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"userId\":1,\"shippingAddress\":\"123 MG Road, Bangalore\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Auth Health",
+          "request": {"method": "GET", "url": "http://localhost:8081/actuator/health"}
+        },
+        {
+          "name": "Product Health",
+          "request": {"method": "GET", "url": "http://localhost:8082/actuator/health"}
+        }
+      ]
+    }
+  ]
+}

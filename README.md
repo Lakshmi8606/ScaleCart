@@ -1,6 +1,55 @@
 # ScaleCart
 
+[![CI](https://github.com/Lakshmi8606/ScaleCart/actions/workflows/ci.yml/badge.svg)](https://github.com/Lakshmi8606/ScaleCart/actions/workflows/ci.yml)
+
 A production-grade e-commerce microservices backend built with Java 17, Spring Boot 3.x, PostgreSQL, Redis, Kafka, RabbitMQ, and Docker.
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    Client(["👤 Client / Postman"])
+    
+    subgraph Gateway ["API Gateway :8080"]
+        GW["Spring Cloud Gateway<br/>JWT Validation · Rate Limiting<br/>Redis Token Bucket"]
+    end
+    
+    subgraph Services ["Microservices"]
+        AUTH["🔐 Auth Service :8081<br/>JWT · RSA-256 · BCrypt<br/>Refresh Tokens"]
+        PROD["📦 Product Service :8082<br/>Catalog · Redis Cache<br/>@Cacheable · Swagger"]
+        ORDER["🛒 Order Service :8083<br/>Cart · @Transactional Checkout<br/>Kafka Producer"]
+        PAY["💳 Payment Service :8084<br/>Idempotency · Webhooks<br/>HMAC Validation"]
+        NOTIF["🔔 Notification Service :8085<br/>Kafka Consumer · Email<br/>Dead Letter Queue"]
+        REPORT["📄 Report Service :8086<br/>JasperReports<br/>PDF Invoice"]
+    end
+    
+    subgraph Data ["Data Layer"]
+        PG[("🐘 PostgreSQL<br/>4 databases")]
+        REDIS[("⚡ Redis<br/>Cache · Rate Limit")]
+        KAFKA[["📨 Apache Kafka<br/>order.created<br/>order.paid"]]
+        RABBIT[["🐰 RabbitMQ<br/>payment.exchange"]]
+    end
+
+    Client --> GW
+    GW --> AUTH
+    GW --> PROD
+    GW --> ORDER
+    GW --> PAY
+    GW --> REPORT
+    
+    AUTH --> PG
+    PROD --> PG
+    PROD --> REDIS
+    ORDER --> PG
+    ORDER --> KAFKA
+    PAY --> PG
+    PAY --> KAFKA
+    PAY --> RABBIT
+    NOTIF --> KAFKA
+    RABBIT --> ORDER
+```
+
+---
 
 ## Services
 
