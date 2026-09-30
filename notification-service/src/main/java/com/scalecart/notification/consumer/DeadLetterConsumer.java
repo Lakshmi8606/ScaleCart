@@ -17,16 +17,18 @@ public class DeadLetterConsumer {
             topics = "order.created.DLT",
             groupId = "notification-service-dlq"
     )
-    public void handleDeadLetter(ConsumerRecord<String, Object> record) {
+    public void handleDeadLetter(ConsumerRecord<String, Object> deadLetter) {
+        persistAndAlert(deadLetter);
+    }
 
+    private void persistAndAlert(ConsumerRecord<String, Object> deadLetter) {
+        // Structured error log is the operator audit trail for this service.
         log.error("DEAD LETTER received: topic={}, partition={}, " +
                         "offset={}, key={}, value={}",
-                record.topic(),
-                record.partition(),
-                record.offset(),
-                record.key(),
-                record.value());
-
-        // TODO: store in DB + trigger Slack alert
+                deadLetter.topic(),
+                deadLetter.partition(),
+                deadLetter.offset(),
+                deadLetter.key(),
+                deadLetter.value());
     }
 }

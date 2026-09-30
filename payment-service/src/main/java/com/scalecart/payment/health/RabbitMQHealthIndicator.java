@@ -2,6 +2,7 @@ package com.scalecart.payment.health;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -21,31 +22,26 @@ public class RabbitMQHealthIndicator implements HealthIndicator {
 
     @Override
     public Health health() {
-        try {
-            // Attempt to open a connection to RabbitMQ
-            com.rabbitmq.client.Connection connection =
-                    connectionFactory.createConnection()
-                            .getDelegate();
+        try (Connection springConnection = connectionFactory.createConnection()) {
+            com.rabbitmq.client.Connection connection = springConnection.getDelegate();
 
-            if (connection.isOpen()) {
-                String serverVersion = connection
-                        .getServerProperties()
-                        .get("version")
-                        .toString();
-
-                return Health.up()
-                        .withDetail("status", "RabbitMQ is healthy")
-                        .withDetail("server_version", serverVersion)
-                        .withDetail("virtual_host",
-                                connectionFactory.getVirtualHost())
-                        .withDetail("queue.order-status-update",
-                                "CONFIGURED")
-                        .build();
-            } else {
+            if (connection == null || !connection.isOpen()) {
                 return Health.down()
                         .withDetail("reason", "Connection is not open")
                         .build();
             }
+
+            Object version = connection.getServerProperties().get("version");
+            String serverVersion = version != null ? version.toString() : "unknown";
+
+            return Health.up()
+                    .withDetail("status", "RabbitMQ is healthy")
+                    .withDetail("server_version", serverVersion)
+                    .withDetail("virtual_host",
+                            connectionFactory.getVirtualHost())
+                    .withDetail("queue.order-status-update",
+                            "CONFIGURED")
+                    .build();
 
         } catch (Exception e) {
             log.error("RabbitMQ health check failed: {}", e.getMessage());

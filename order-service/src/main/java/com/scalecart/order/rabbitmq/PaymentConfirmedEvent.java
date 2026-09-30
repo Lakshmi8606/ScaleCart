@@ -12,7 +12,9 @@ public class PaymentConfirmedEvent {
     private String gatewayTransactionId;
     private LocalDateTime confirmedAt;
 
-    public PaymentConfirmedEvent() {}
+    public PaymentConfirmedEvent() {
+        // Jackson / RabbitMQ deserialization
+    }
 
     public Long getPaymentId() { return paymentId; }
     public void setPaymentId(Long p) { this.paymentId = p; }

@@ -19,6 +19,7 @@ public class RegisterRequest {
     private String password;
 
     public RegisterRequest() {
+        // Jackson / Spring MVC binding
     }
 
     public String getUsername() {

@@ -11,7 +11,9 @@ public class CheckoutRequest {
     @NotBlank(message = "Shipping address is required")
     private String shippingAddress;
 
-    public CheckoutRequest() {}
+    public CheckoutRequest() {
+        // Jackson / Spring MVC binding
+    }
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }

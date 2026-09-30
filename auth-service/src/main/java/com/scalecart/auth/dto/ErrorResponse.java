@@ -1,16 +1,18 @@
 package com.scalecart.auth.dto;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 public class ErrorResponse {
 
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp = LocalDateTime.now(ZoneId.systemDefault());
     private int status;
     private String error;
     private List<String> messages;
 
     public ErrorResponse() {
+        // Jackson binding
     }
 
     public ErrorResponse(int status, String error, List<String> messages) {

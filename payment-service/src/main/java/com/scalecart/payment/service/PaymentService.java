@@ -17,8 +17,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
+/**
+ * Core payment processing service.
+ *
+ * <p>Implements idempotency to prevent duplicate charges:
+ * every payment request carries an {@code idempotencyKey} generated
+ * by the client. If the key already exists in the database, the
+ * original payment response is returned without creating a new charge.
+ *
+ * <p>Payment state machine: PENDING → COMPLETED | FAILED.
+ * State transitions are validated before persisting.
+ *
+ * @see PaymentRepository
+ * @see OrderPaidEvent
+ */
 @Service
 public class PaymentService {
 
@@ -147,7 +162,7 @@ public class PaymentService {
                 payment.getUserId(),
                 payment.getAmount(),
                 payment.getGatewayTransactionId(),
-                LocalDateTime.now()
+                LocalDateTime.now(ZoneId.systemDefault())
         );
 
         kafkaTemplate.send(
@@ -173,7 +188,7 @@ public class PaymentService {
                 payment.getUserId(),
                 payment.getAmount(),
                 payment.getGatewayTransactionId(),
-                LocalDateTime.now()
+                LocalDateTime.now(ZoneId.systemDefault())
         );
 
         rabbitTemplate.convertAndSend(

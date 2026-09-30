@@ -15,6 +15,7 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     private static final Logger log =
             LoggerFactory.getLogger(RedisHealthIndicator.class);
+    private static final String UNKNOWN = "unknown";
 
     private final RedisConnectionFactory connectionFactory;
 
@@ -39,15 +40,15 @@ public class RedisHealthIndicator implements HealthIndicator {
             Properties info = connection.serverCommands().info("server");
 
             String redisVersion = info != null
-                    ? info.getProperty("redis_version", "unknown")
-                    : "unknown";
+                    ? info.getProperty("redis_version", UNKNOWN)
+                    : UNKNOWN;
 
             // Check memory usage
             Properties memInfo = connection.serverCommands().info("memory");
 
             String usedMemory = memInfo != null
-                    ? memInfo.getProperty("used_memory_human", "unknown")
-                    : "unknown";
+                    ? memInfo.getProperty("used_memory_human", UNKNOWN)
+                    : UNKNOWN;
 
             return Health.up()
                     .withDetail("status", "Redis is healthy")

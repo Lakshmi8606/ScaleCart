@@ -1,4 +1,4 @@
-# Run HmacTestUtil.main() to regenerate X-Razorpay-Signature if body changes
+# Local webhook test — regenerate HMAC if the body changes
 POST http://localhost:8084/api/payments/webhook
 Content-Type: application/json
 X-Razorpay-Signature: 31dc4a99022b1e5073a21c8302c200aeaaab324ff6c7f1aaaf69f165277d964d

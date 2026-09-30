@@ -12,6 +12,17 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
+/**
+ * Validates webhook signatures using HMAC-SHA256.
+ *
+ * <p>Uses constant-time comparison ({@link #constantTimeEquals})
+ * to prevent timing attacks — an attacker measuring response time
+ * cannot deduce how many characters of their forged signature
+ * are correct.
+ *
+ * @see <a href="https://codahale.com/a-lesson-in-timing-attacks/">
+ *     A Lesson In Timing Attacks</a>
+ */
 @Component
 public class WebhookSignatureValidator {
 

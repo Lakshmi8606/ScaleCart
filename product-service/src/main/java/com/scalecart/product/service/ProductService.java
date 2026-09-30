@@ -148,7 +148,9 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
 
-        Product product = getProductById(id);
+        Product product = productRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Product not found with id: " + id));
 
         product.setActive(false);
 

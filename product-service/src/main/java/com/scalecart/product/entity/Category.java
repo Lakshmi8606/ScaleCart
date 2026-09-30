@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "categories")
@@ -21,9 +22,11 @@ public class Category implements Serializable {
     private String description;
 
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.systemDefault());
 
-    public Category() {}
+    public Category() {
+        // JPA requires a no-arg constructor
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

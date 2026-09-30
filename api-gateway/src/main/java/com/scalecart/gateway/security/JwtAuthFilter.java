@@ -90,5 +90,7 @@ public class JwtAuthFilter extends
         return null;
     }
 
-    public static class Config {}
+    public static class Config {
+        // Spring Cloud Gateway requires a config type even when unused
+    }
 }

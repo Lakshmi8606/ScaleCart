@@ -21,7 +21,9 @@ public class PaymentInitiateRequest {
     @NotBlank(message = "Gateway is required")
     private String gateway;  // "razorpay", "stripe", "paytm"
 
-    public PaymentInitiateRequest() {}
+    public PaymentInitiateRequest() {
+        // Jackson / Spring MVC binding
+    }
 
     public Long getOrderId() { return orderId; }
     public void setOrderId(Long orderId) { this.orderId = orderId; }

@@ -17,7 +17,9 @@ public class ProductResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public ProductResponse() {}
+    public ProductResponse() {
+        // Jackson / mapper binding
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

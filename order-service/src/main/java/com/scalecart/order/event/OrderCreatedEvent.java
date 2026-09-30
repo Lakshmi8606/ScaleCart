@@ -13,7 +13,9 @@ public class OrderCreatedEvent {
     private List<OrderItemDetail> items;
     private LocalDateTime createdAt;
 
-    public OrderCreatedEvent() {}
+    public OrderCreatedEvent() {
+        // Jackson / Kafka deserialization
+    }
 
     public OrderCreatedEvent(Long orderId, Long userId, BigDecimal totalAmount,
                              String shippingAddress, List<OrderItemDetail> items,
@@ -32,7 +34,9 @@ public class OrderCreatedEvent {
         private BigDecimal price;
         private Integer quantity;
 
-        public OrderItemDetail() {}
+        public OrderItemDetail() {
+            // Jackson / Kafka deserialization
+        }
 
         public OrderItemDetail(Long productId, String productName,
                                BigDecimal price, Integer quantity) {

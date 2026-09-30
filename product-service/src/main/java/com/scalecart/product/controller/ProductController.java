@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/products")
 @Tag(name = "Products", description = "Product catalog management APIs")
 public class ProductController {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService productService;
 
@@ -83,15 +87,13 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(
             @PathVariable Long id) {
 
-        System.out.println(">>> CONTROLLER REACHED: " + id);
+        log.debug("Fetching product id={}", id);
 
         Product product = productService.getProductById(id);
 
-        System.out.println(">>> SERVICE RETURNED: " + product);
+        log.debug("Loaded product id={}", product.getId());
 
         ProductResponse response = ProductMapper.toResponse(product);
-
-        System.out.println(">>> MAPPING COMPLETED");
 
         return ResponseEntity.ok(response);
     }

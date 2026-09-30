@@ -54,10 +54,7 @@ class CartServiceTest {
         when(cartRepository.findByUserId(99L))
                 .thenReturn(Optional.empty());
         when(cartRepository.save(any(Cart.class)))
-                .thenAnswer(inv -> {
-                    Cart c = inv.getArgument(0);
-                    return c;
-                });
+                .thenAnswer(inv -> inv.getArgument(0));
 
         Cart result = cartService.getOrCreateCart(99L);
 

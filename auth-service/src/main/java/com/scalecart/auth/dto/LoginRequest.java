@@ -13,6 +13,7 @@ public class LoginRequest {
     private String password;
 
     public LoginRequest() {
+        // Jackson / Spring MVC binding
     }
 
     public String getEmail() {

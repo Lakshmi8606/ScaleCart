@@ -12,6 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Handles cart management and order lifecycle.
+ *
+ * <p>The {@link #checkout(Long, String)} method is fully
+ * {@code @Transactional} — if any step fails (cart empty,
+ * save failure), all database changes are rolled back atomically.
+ *
+ * <p>After a successful commit, an {@code order.created} Kafka
+ * event is published. This is intentionally outside the transaction
+ * boundary — a Kafka failure does not roll back the order.
+ */
 @Service
 public class OrderService {
 

@@ -4,6 +4,7 @@ import com.scalecart.auth.dto.AuthResponse;
 import com.scalecart.auth.dto.LoginRequest;
 import com.scalecart.auth.dto.RegisterRequest;
 import com.scalecart.auth.entity.RefreshToken;
+import com.scalecart.auth.entity.Role;
 import com.scalecart.auth.entity.User;
 import com.scalecart.auth.service.AuthenticationService;
 import com.scalecart.auth.service.JwtService;
@@ -69,7 +70,7 @@ public class AuthController {
                 Map.of(
                         "roles",
                         user.getRoles().stream()
-                                .map(r -> r.getName())
+                                .map(Role::getName)
                                 .toList()
                 )
         );

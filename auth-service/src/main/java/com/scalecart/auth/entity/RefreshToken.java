@@ -2,6 +2,7 @@ package com.scalecart.auth.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "refresh_tokens")
@@ -22,7 +23,7 @@ public class RefreshToken {
     private LocalDateTime expiryDate;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.systemDefault());
 
     public RefreshToken() {
     }

@@ -64,6 +64,13 @@ public class KafkaHealthIndicator implements HealthIndicator {
                             orderPaidExists ? "EXISTS" : "MISSING")
                     .build();
 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Kafka health check interrupted: {}", e.getMessage());
+            return Health.down()
+                    .withDetail("error", e.getMessage())
+                    .withDetail("reason", "Cannot connect to Kafka broker")
+                    .build();
         } catch (Exception e) {
             log.error("Kafka health check failed: {}", e.getMessage());
             return Health.down()

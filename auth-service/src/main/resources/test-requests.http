@@ -3,9 +3,9 @@ POST http://localhost:8081/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "laxdev",
-  "email": "laxdev@example.com",
-  "password": "SecurePass123"
+  "username": "demo",
+  "email": "demo@scalecart.com",
+  "password": "Demo@1234"
 }
 
 ### Login
@@ -13,8 +13,8 @@ POST http://localhost:8081/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "laxdev@example.com",
-  "password": "SecurePass123"
+  "email": "demo@scalecart.com",
+  "password": "Demo@1234"
 }
 
 ### Try registering with invalid email (should fail validation)
@@ -26,11 +26,12 @@ Content-Type: application/json
   "email": "not-an-email",
   "password": "123"
 }
+
 ### Login and get JWT
 POST http://localhost:8081/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "laxdev@example.com",
-  "password": "SecurePass123"
+  "email": "demo@scalecart.com",
+  "password": "Demo@1234"
 }

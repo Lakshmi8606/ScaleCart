@@ -1,5 +1,6 @@
 package com.scalecart.payment.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scalecart.payment.dto.WebhookPayload;
@@ -53,7 +54,7 @@ public class WebhookController {
         WebhookPayload payload;
         try {
             payload = parseWebhookBody(rawBody);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             log.error("Failed to parse webhook body: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Invalid webhook payload");
@@ -67,7 +68,8 @@ public class WebhookController {
         return ResponseEntity.ok("Webhook received");
     }
 
-    private WebhookPayload parseWebhookBody(String rawBody) throws Exception {
+    private WebhookPayload parseWebhookBody(String rawBody)
+            throws JsonProcessingException {
 
         JsonNode root = objectMapper.readTree(rawBody);
 

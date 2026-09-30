@@ -6,7 +6,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,14 +26,14 @@ public class OrderEventConsumer {
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void handleOrderCreated(
-            ConsumerRecord<String, OrderCreatedEvent> record) {
+            ConsumerRecord<String, OrderCreatedEvent> message) {
 
-        OrderCreatedEvent event = record.value();
+        OrderCreatedEvent event = message.value();
 
         log.info("Consumed order.created event: orderId={}, partition={}, offset={}",
                 event.getOrderId(),
-                record.partition(),
-                record.offset());
+                message.partition(),
+                message.offset());
 
         String recipientEmail = "user" + event.getUserId() + "@example.com";
 

@@ -3,6 +3,7 @@ package com.scalecart.payment.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "payments")
@@ -41,17 +42,19 @@ public class Payment {
     private String failureReason;
 
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.systemDefault());
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now(ZoneId.systemDefault());
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(ZoneId.systemDefault());
     }
 
-    public Payment() {}
+    public Payment() {
+        // JPA requires a no-arg constructor
+    }
 
     public Long getId() { return id; }
     public Long getOrderId() { return orderId; }

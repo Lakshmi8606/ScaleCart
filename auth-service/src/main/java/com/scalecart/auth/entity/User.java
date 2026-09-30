@@ -2,6 +2,7 @@ package com.scalecart.auth.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class User {
     private boolean enabled = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.systemDefault());
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

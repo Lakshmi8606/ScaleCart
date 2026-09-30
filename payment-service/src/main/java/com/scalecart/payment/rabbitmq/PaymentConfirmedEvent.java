@@ -12,7 +12,9 @@ public class PaymentConfirmedEvent {
     private String gatewayTransactionId;
     private LocalDateTime confirmedAt;
 
-    public PaymentConfirmedEvent() {}
+    public PaymentConfirmedEvent() {
+        // Jackson / RabbitMQ deserialization
+    }
 
     public PaymentConfirmedEvent(Long paymentId, Long orderId,
                                  Long userId, BigDecimal amount,

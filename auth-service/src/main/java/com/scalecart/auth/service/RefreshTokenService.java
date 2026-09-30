@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Service
@@ -25,14 +26,14 @@ public class RefreshTokenService {
         RefreshToken token = new RefreshToken(
                 UUID.randomUUID().toString(),   // random, unguessable token
                 user,
-                LocalDateTime.now().plusDays(refreshTokenExpiryDays)
+                LocalDateTime.now(ZoneId.systemDefault()).plusDays(refreshTokenExpiryDays)
         );
         return refreshTokenRepository.save(token);
     }
 
     public RefreshToken validateRefreshToken(String token) {
         return refreshTokenRepository.findByToken(token)
-                .filter(rt -> rt.getExpiryDate().isAfter(LocalDateTime.now()))
+                .filter(rt -> rt.getExpiryDate().isAfter(LocalDateTime.now(ZoneId.systemDefault())))
                 .orElseThrow(() -> new IllegalArgumentException("Refresh token is invalid or expired"));
     }
 

@@ -1,7 +1,6 @@
 package com.scalecart.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scalecart.auth.dto.AuthResponse;
 import com.scalecart.auth.dto.LoginRequest;
 import com.scalecart.auth.dto.RegisterRequest;
 import com.scalecart.auth.entity.User;

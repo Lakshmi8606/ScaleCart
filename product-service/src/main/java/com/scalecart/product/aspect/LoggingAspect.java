@@ -31,32 +31,20 @@ public class LoggingAspect {
 
         String className  = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
-        Object[] args     = joinPoint.getArgs();
 
-        log.info("→ Entering {}.{}() with args: {}",
-                className, methodName, Arrays.toString(args));
+        if (log.isInfoEnabled()) {
+            log.info("→ Entering {}.{}() with args: {}",
+                    className, methodName, Arrays.toString(joinPoint.getArgs()));
+        }
 
         long startTime = System.currentTimeMillis();
+        Object result = joinPoint.proceed();
+        long executionTime = System.currentTimeMillis() - startTime;
 
-        try {
-            Object result = joinPoint.proceed();
+        log.info("← Exiting {}.{}() — completed in {}ms",
+                className, methodName, executionTime);
 
-            long executionTime = System.currentTimeMillis() - startTime;
-
-            log.info("← Exiting {}.{}() — completed in {}ms",
-                    className, methodName, executionTime);
-
-            return result;
-
-        } catch (Exception e) {
-            long executionTime = System.currentTimeMillis() - startTime;
-
-            log.error("✗ Exception in {}.{}() after {}ms — {}: {}",
-                    className, methodName, executionTime,
-                    e.getClass().getSimpleName(), e.getMessage());
-
-            throw e;
-        }
+        return result;
     }
 
     @Before("serviceLayerPointcut()")
@@ -111,7 +99,6 @@ public class LoggingAspect {
 
         String className  = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
-        Object[] args     = joinPoint.getArgs();
 
         long start = System.currentTimeMillis();
 
@@ -120,10 +107,12 @@ public class LoggingAspect {
         long duration = System.currentTimeMillis() - start;
 
         if (duration > 200) {
-            log.warn("SLOW DB QUERY — {}.{}() with args {} took {}ms",
-                    className, methodName,
-                    Arrays.toString(args), duration);
-        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("SLOW DB QUERY — {}.{}() with args {} took {}ms",
+                        className, methodName,
+                        Arrays.toString(joinPoint.getArgs()), duration);
+            }
+        } else if (log.isDebugEnabled()) {
             log.debug("DB QUERY — {}.{}() completed in {}ms",
                     className, methodName, duration);
         }

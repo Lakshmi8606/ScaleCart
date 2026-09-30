@@ -29,7 +29,9 @@ public class InvoiceRequest {
         private Integer quantity;
         private BigDecimal price;
 
-        public InvoiceItem() {}
+        public InvoiceItem() {
+            // Jackson / report binding
+        }
 
         // Computed for report display; not stored
         public BigDecimal getLineTotal() {
@@ -44,7 +46,9 @@ public class InvoiceRequest {
         public void setPrice(BigDecimal p) { this.price = p; }
     }
 
-    public InvoiceRequest() {}
+    public InvoiceRequest() {
+        // Jackson / Spring MVC binding
+    }
 
     public Long getOrderId() { return orderId; }
     public void setOrderId(Long orderId) { this.orderId = orderId; }
